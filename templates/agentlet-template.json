@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "_comment": "Agentlet Configuration Template - JSON Format",
+  "_description": "This is a comprehensive template showing all available configuration options for Synteles Agentlet. Copy and customize this file for your use case. Note: Fields starting with '_' are documentation and will be ignored by the parser.",
+
+  "_usage": {
+    "description": "How to use this template",
+    "examples": [
+      "agentlet-core --agentlet agentlet-template.json",
+      "agentlet-core --agentlet agentlet-template.json --prompt 'New task'",
+      "agentlet-core --agentlet agentlet-template.json --model 'openai/gpt-4o'",
+      "agentlet-core --agentlet agentlet-template.json --debug --streaming"
+    ]
+  },
+
+  "_environment_variables": {
+    "description": "Required environment variables depend on your model provider",
+    "bedrock": [
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "AWS_REGION (optional)"
+    ],
+    "anthropic": [
+      "ANTHROPIC_API_KEY"
+    ],
+    "anthropic_foundry": [
+      "ANTHROPIC_FOUNDRY_API_KEY",
+      "ANTHROPIC_FOUNDRY_RESOURCE"
+    ],
+    "openai": [
+      "OPENAI_API_KEY"
+    ],
+    "azure": [
+      "AZURE_API_KEY",
+      "AZURE_API_BASE",
+      "AZURE_API_VERSION"
+    ],
+    "vertex_ai": [
+      "GOOGLE_APPLICATION_CREDENTIALS",
+      "VERTEX_PROJECT",
+      "VERTEX_LOCATION"
+    ]
+  },
+
+  "secrets": [],
+  "_secrets_description": "List of secret names owned by this agentlet's creator (optional). Platform-only field — agentlet-core silently ignores it; secrets are injected into the environment before the process starts. Each entry is a plain secret name (string) — not an ARN or path. At runtime the Synteles Platform resolves each name relative to the agentlet owner's UserId and injects the values. Example: ['anthropic-keys', 'database-credentials']",
+
+  "agentlet": {
+    "_description": "Agentlet metadata - basic information about your agentlet",
+    "name": "my-agentlet",
+    "_name_description": "Name of the agentlet (required)",
+    "version": "1.0.0",
+    "_version_description": "Version string (optional, defaults to '1.0.0')"
+  },
+
+  "prompt": "Analyze the project structure and provide insights",
+  "_prompt_description": "Default user prompt/task for the agentlet to execute. Can be overridden via CLI with --prompt flag. If not provided here, --prompt must be specified on command line.",
+
+  "system_prompt": "You are a helpful AI assistant specialized in software development.\n\nYour capabilities:\n- Analyze code and provide insights\n- Execute bash commands to inspect the system\n- Read and write files\n- Search documentation\n\nAlways:\n- Be concise and accurate\n- Explain your reasoning\n- Ask for clarification when needed\n- Prioritize security and best practices",
+  "_system_prompt_description": "Instructions that define the agentlet's behavior, personality, and capabilities. This is sent to the LLM as the system message.",
+
+  "model": {
+    "_description": "LLM model provider and settings",
+    "provider": "bedrock",
+    "_provider_description": "Model provider (required). Supported: anthropic, bedrock, openai, azure, vertex_ai, and any LiteLLM provider. See: https://docs.litellm.ai/docs/providers",
+    "_provider_examples": {
+      "bedrock": "AWS Bedrock",
+      "anthropic": "Anthropic API",
+      "openai": "OpenAI API",
+      "azure": "Azure OpenAI",
+      "vertex_ai": "Google Vertex AI"
+    },
+    "model_id": "claude-sonnet-4-5",
+    "_model_id_description": "Model identifier (required). Format varies by provider.",
+    "_model_id_examples": {
+      "bedrock": "claude-sonnet-4-5, claude-opus-4",
+      "anthropic": "claude-3-5-sonnet-20241022",
+      "openai": "gpt-4o, gpt-4-turbo",
+      "azure": "your-deployment-name"
+    },
+    "parameters": {
+      "_description": "Model-specific parameters (optional). These are passed directly to the LLM API.",
+      "temperature": 0.7,
+      "_temperature_description": "Randomness (0.0 = deterministic, 1.0 = creative)",
+      "top_p": 0.9,
+      "_top_p_description": "Nucleus sampling threshold",
+      "top_k": 40,
+      "_top_k_description": "Top-k sampling (provider-dependent)",
+      "_additional_options": {
+        "max_tokens": "Override resource_limits.max_tokens",
+        "stop_sequences": "Array of custom stop sequences, e.g., ['END']"
+      }
+    },
+    "retry": {
+      "_description": "Retry configuration for handling transient errors (optional). Helps handle rate limits, API timeouts, and connection errors.",
+      "max_retries": 5,
+      "_max_retries_description": "Maximum number of retry attempts (default: 5)",
+      "initial_retry_interval": 30.0,
+      "_initial_retry_interval_description": "Initial retry interval in seconds (default: 30.0). First retry waits this long after failure.",
+      "backoff_factor": 2.0,
+      "_backoff_factor_description": "Exponential backoff factor (default: 2.0). Each retry interval = previous interval * backoff_factor. Example: 30s, 60s, 120s, 240s with factor 2.0",
+      "max_retry_interval": 300.0,
+      "_max_retry_interval_description": "Maximum retry interval in seconds (default: 300.0). Caps the exponential backoff to prevent excessively long waits.",
+      "retry_on_errors": [
+        "RateLimitError",
+        "EventLoopException",
+        "APIConnectionError",
+        "APITimeoutError",
+        "litellm.RateLimitError"
+      ],
+      "_retry_on_errors_description": "List of error types to retry on (optional). Default list includes common transient errors. Add custom error types as needed."
+    }
+  },
+
+  "tools": [
+    "shell",
+    "editor"
+  ],
+  "_tools_description": "Built-in tools from strands-agents-tools package (imported as strands_tools.<name>). Common tools: shell (execute shell commands), editor (advanced file editing), file_read (read files), file_write (write files), use_computer (keyboard/mouse/screenshots), http_request, tavily, python_repl, calculator, environment, current_time, use_llm, workflow, batch, think, swarm. Tools are loaded on-demand; consent is auto-granted via BYPASS_TOOL_CONSENT=true.",
+
+  "mcp_tools": [
+    {
+      "_description": "STDIO SERVER EXAMPLE - Launches MCP server as subprocess with stdin/stdout communication",
+      "name": "filesystem",
+      "_name_description": "Tool name/identifier (required)",
+      "server": "stdio",
+      "_server_description": "Server transport type (required). Options: stdio, http, sse",
+      "command": "npx",
+      "_command_description": "Command to execute (required for stdio)",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/path/to/allowed/directory"
+      ],
+      "_args_description": "Command arguments (optional for stdio)",
+      "env": {
+        "ALLOWED_DIRECTORIES": "${WORK_DIR}",
+        "DEBUG": "false"
+      },
+      "_env_description": "Environment variables for the subprocess. ${WORK_DIR} will be replaced with the working directory.",
+      "prefix": "fs",
+      "_prefix_description": "Tool name prefix (optional). Prevents naming conflicts when using multiple MCP servers. Example: 'read_file' becomes 'fs_read_file'",
+      "tool_filters": {
+        "_description": "Control which tools from this server are loaded (optional)",
+        "allowed": [
+          "read_file",
+          "write_file",
+          "list_directory"
+        ],
+        "_allowed_description": "Only load these specific tools (mutually exclusive with 'rejected')",
+        "_rejected_alternative": [
+          "delete_file",
+          "execute_command"
+        ],
+        "_rejected_description": "Or use 'rejected' to exclude specific tools (mutually exclusive with 'allowed')"
+      }
+    },
+    {
+      "_description": "HTTP (STREAMABLE) SERVER EXAMPLE - Connects to MCP server via HTTP with streaming support",
+      "name": "web-search",
+      "server": "http",
+      "url": "https://api.example.com/mcp",
+      "_url_description": "Server URL (required for http/sse)",
+      "headers": {
+        "Content-Type": "application/json",
+        "X-Custom-Header": "value"
+      },
+      "_headers_description": "HTTP headers (optional)",
+      "api_key_env": "SEARCH_API_KEY",
+      "_api_key_env_description": "Environment variable containing API key (optional). Will be added as 'Authorization: Bearer <key>' header if not already present.",
+      "prefix": "search",
+      "tool_filters": {
+        "allowed": [
+          "search_web",
+          "search_images"
+        ]
+      }
+    },
+    {
+      "_description": "SSE (Server-Sent Events) SERVER EXAMPLE - Connects to MCP server via SSE for real-time event streaming",
+      "name": "realtime-data",
+      "server": "sse",
+      "url": "https://api.example.com/mcp/events",
+      "_note": "SSE client currently doesn't support custom headers. Include authentication in the URL or handle server-side. api_key_env is ignored for SSE servers.",
+      "prefix": "rt",
+      "tool_filters": {
+        "rejected": [
+          "dangerous_operation"
+        ]
+      }
+    }
+  ],
+  "_mcp_tools_description": "Model Context Protocol tools integration. Supports stdio (subprocess), HTTP (streamable), and SSE (Server-Sent Events). MCP servers provide additional tools and capabilities to the agent.",
+
+  "_sub_agentlets_description": "SUB-AGENTLETS (optional) — Transform this agentlet into an orchestrator by declaring inline sub-agentlets. Each becomes a callable tool the orchestrator's LLM can invoke. Sub-agentlets run in-process (no subprocess/IPC). Key rules: name must be unique (becomes tool name); description is what the orchestrator LLM reads to decide when to call it; system_prompt defines specialisation; model is optional (inherits orchestrator's model when omitted); tools/mcp_tools follow the same schema as top-level; output defaults to all-false (silent). No resource_limits or nested sub_agentlets per sub-agentlet.",
+  "_sub_agentlets_example": [
+    {
+      "name": "research_agent",
+      "_name_note": "Unique identifier — becomes the tool name the orchestrator calls",
+      "description": "Searches for factual information on a given topic and returns a concise summary with key findings and sources. Use for any task requiring up-to-date information or fact-checking.",
+      "_description_note": "What the orchestrator LLM reads to decide when to call this sub-agentlet. Be specific — start with a verb.",
+      "system_prompt": "You are a research specialist. Find accurate, up-to-date information on the given topic. Return a structured summary: key findings, supporting details, and sources. Be concise.",
+      "tools": ["tavily", "http_request"],
+      "_model_note": "No model key — inherits the orchestrator's model",
+      "output": {
+        "show_messages": false,
+        "show_reasoning": false,
+        "show_tool_calls": false,
+        "_output_note": "All false by default (silent). Set to true to see this sub-agentlet's execution inline."
+      }
+    },
+    {
+      "name": "writing_agent",
+      "description": "Transforms research notes, bullet points, or raw information into well-structured written content. Use after research_agent has gathered the necessary information.",
+      "system_prompt": "You are a professional writer. Transform research notes into clear, well-structured content. Use headings and logical structure. Synthesise — do not just restate bullet points.",
+      "model": {
+        "provider": "bedrock",
+        "model_id": "claude-haiku-4-5",
+        "_model_note": "Override the orchestrator's model — useful for cost optimisation",
+        "parameters": {
+          "temperature": 0.7
+        }
+      },
+      "tools": ["editor"]
+    }
+  ],
+
+  "_swarm_description": "SWARM (optional) — Run a set of specialised agents that hand off directly to each other with no central coordinator, powered by strands.multiagent.Swarm. Three modes: Declarative (define participants in a 'swarm' key), Dynamic (add 'swarm' to the tools list), or Combined (both). IMPORTANT: 'swarm' and 'sub_agentlets' are mutually exclusive. Name expansion: count=1 → name unchanged; count>1 → name_1, name_2, … Entry point defaults to the first participant's first instance.",
+  "_swarm_example": {
+    "entry_point": "solutions_architect",
+    "_entry_point_description": "Base name of the participant that receives the initial prompt. Defaults to the first participant.",
+    "max_handoffs": 20,
+    "_max_handoffs_description": "Maximum total handoffs before the swarm halts (default: 20)",
+    "max_iterations": 20,
+    "_max_iterations_description": "Maximum total agent iterations (default: 20)",
+    "execution_timeout": 900.0,
+    "_execution_timeout_description": "Total swarm wall-clock limit in seconds, enforced by the Strands SDK (default: 900). Set this in the swarm block — NOT via --timeout. The --timeout flag is an independent outer process ceiling and should be set to match or exceed this value.",
+    "node_timeout": 300.0,
+    "_node_timeout_description": "Per-agent turn limit in seconds, enforced by the Strands SDK (default: 300). Prevents one agent from blocking the panel indefinitely.",
+    "repetitive_handoff_detection_window": 0,
+    "_repetitive_handoff_detection_window_description": "Loop detection window size (default: 0 = disabled)",
+    "repetitive_handoff_min_unique_agents": 0,
+    "_repetitive_handoff_min_unique_agents_description": "Min unique agents required in detection window (default: 0 = disabled)",
+    "participants": [
+      {
+        "name": "solutions_architect",
+        "count": 2,
+        "_count_note": "count>1 expands to solutions_architect_1, solutions_architect_2",
+        "description": "Designs architecture and evaluates technical trade-offs. Use for system design, technology selection, and integration patterns.",
+        "system_prompt": "You are a senior solutions architect on an expert panel. Design systems, evaluate trade-offs, and produce clear recommendations. Hand off to devops_engineer for infrastructure concerns.",
+        "tools": ["http_request"],
+        "_model_note": "Omit 'model' to inherit the top-level model; specify to override per participant",
+        "_mcp_tools_note": "mcp_tools follows the same schema as top-level mcp_tools"
+      },
+      {
+        "name": "devops_engineer",
+        "count": 1,
+        "_count_note": "count=1: name stays as devops_engineer (no _N suffix)",
+        "description": "Handles infrastructure, CI/CD pipelines, and operational concerns. Use for deployment strategies, monitoring, scaling, and reliability topics.",
+        "system_prompt": "You are a senior DevOps engineer on an expert panel. Address infrastructure, deployment, and reliability concerns with concrete, implementable guidance.",
+        "model": {
+          "provider": "bedrock",
+          "model_id": "claude-haiku-4-5",
+          "_model_note": "Override to use a cheaper model for lower-complexity roles"
+        },
+        "tools": ["shell", "editor"]
+      }
+    ]
+  },
+
+  "resource_limits": {
+    "_description": "Constraints on agentlet execution to prevent runaway token costs and tool loops. Timeout model: singleton/sub-agentlet — set execution timeout at launch via --timeout flag, do NOT add max_execution_time here; swarm — use swarm.execution_timeout and swarm.node_timeout (Strands SDK-enforced), with --timeout as an independent outer ceiling.",
+    "max_tokens": 10000,
+    "_max_tokens_description": "Maximum tokens for LLM generation (default: 10000). Includes both input and output tokens. Can be overridden via CLI with --max-tokens flag.",
+    "max_tool_calls": 20,
+    "_max_tool_calls_description": "Maximum number of tool calls allowed (default: 20). Prevents infinite loops of tool invocations."
+  },
+
+  "output": {
+    "_description": "Controls how agentlet displays results",
+    "format": "markdown",
+    "_format_description": "Output format (default: 'markdown'). Options: 'markdown', 'json', 'text'. Can be overridden via CLI with --output-format flag.",
+    "show_messages": true,
+    "_show_messages_description": "Show complete assistant messages per turn (default: true). When true: displays full response text from the agent. When false: only shows metadata and tool calls.",
+    "show_reasoning": true,
+    "_show_reasoning_description": "Show agent reasoning steps (default: true). Displays the LLM's extended thinking/reasoning blocks. Only shown when model supports reasoning (e.g., Claude with extended thinking).",
+    "show_tool_calls": true,
+    "_show_tool_calls_description": "Show tool invocations (default: true). Displays when tools are called with their parameters and results.",
+    "show_turn_boundaries": false,
+    "_show_turn_boundaries_description": "Show turn boundaries in multi-turn conversations (default: false). When true: displays visual separators between conversation turns. Useful for debugging multi-turn agent interactions."
+  },
+
+  "observability": {
+    "_description": "OpenTelemetry integration for traces and metrics export. Enables comprehensive observability for production deployments.",
+    "otel": {
+      "_description": "OpenTelemetry configuration",
+      "enabled": false,
+      "_enabled_description": "Enable OpenTelemetry trace export (default: false). When enabled, traces are sent to OTLP endpoint.",
+      "_otlp_endpoint_example": "http://localhost:4318",
+      "_otlp_endpoint_description": "OTLP base endpoint URL (optional). Used as fallback if signal-specific endpoints not set. OpenTelemetry will automatically append /v1/traces and /v1/metrics. Defaults to http://localhost:4318 or OTEL_EXPORTER_OTLP_ENDPOINT env var.",
+      "_otlp_traces_endpoint_example": "https://cloud.langfuse.com/api/public/otel",
+      "_otlp_traces_endpoint_description": "Signal-specific endpoint for traces (optional). Overrides otlp_endpoint for traces. OpenTelemetry automatically appends /v1/traces.",
+      "_otlp_metrics_endpoint_example": "https://metrics.example.com/otlp",
+      "_otlp_metrics_endpoint_description": "Signal-specific endpoint for metrics (optional). Overrides otlp_endpoint for metrics. OpenTelemetry automatically appends /v1/metrics.",
+      "otlp_headers": {},
+      "_otlp_headers_description": "Custom headers sent with OTLP requests (optional). Example for Langfuse: {'Authorization': 'Bearer your-langfuse-secret-key'}",
+      "console_exporter": false,
+      "_console_exporter_description": "Prints trace spans to stdout for development/debugging (default: false). Useful for verifying traces are being generated correctly.",
+      "_sampler_options": ["always_on", "always_off", "traceidratio", "parentbased_always_on"],
+      "_sampler_description": "Trace sampler type (optional). Controls which traces get exported to reduce volume/cost. Options: always_on (export all traces, good for development), always_off (export no traces), traceidratio (export a percentage based on sampler_arg), parentbased_always_on (follow parent span's sampling decision).",
+      "_sampler_arg_example": 0.1,
+      "_sampler_arg_description": "Sampler argument (optional). For traceidratio sampler: percentage to export (0.0 to 1.0). Example: 0.1 = 10% of traces (useful for high-volume production).",
+      "enable_metrics": false,
+      "_enable_metrics_description": "Enable metrics export (default: false). Export metrics in addition to traces. Provides quantitative performance data (latency, throughput, etc.).",
+      "trace_attributes": {},
+      "_trace_attributes_description": "Custom trace attributes (optional). Added to all trace spans for filtering/grouping. Useful for identifying service, environment, version, etc.",
+      "_trace_attributes_example": {
+        "environment": "production",
+        "service.name": "agentlet-core",
+        "service.version": "1.0.0",
+        "deployment": "us-west-2"
+      }
+    }
+  },
+
+  "_notes": {
+    "environment_variables": "Environment variables can be referenced using ${VAR_NAME} or $VAR_NAME syntax. Special variable ${WORK_DIR} will be replaced with the working directory path.",
+    "litellm_providers": "For a complete list of supported LLM providers and their configuration, see: https://docs.litellm.ai/docs/providers",
+    "mcp_protocol": "For more information about Model Context Protocol, see: https://modelcontextprotocol.io/",
+    "strands_tools": "Built-in tools are from the strands-agents-tools package. Tool consent is auto-granted via BYPASS_TOOL_CONSENT=true."
+  }
+}

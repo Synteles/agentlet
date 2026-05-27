@@ -1,0 +1,31 @@
+# Example: Simple Assistant Agentlet
+# A basic conversational assistant with minimal configuration
+
+agentlet:
+  name: "generic-assistant"
+  version: "1.0.0"
+
+system_prompt: |
+  You are a helpful assistant that can answer questions and help with tasks.
+  Be concise and clear in your responses.
+
+model:
+  provider: azure_ai
+  model_id: gpt-5.3-chat
+
+tools:
+  - shell
+  - http_request
+  - current_time
+  - calculator
+  - editor
+  - environment
+  - python_repl
+  - think
+
+output:
+  streaming: true
+
+observability:
+  otel:
+    enabled: true

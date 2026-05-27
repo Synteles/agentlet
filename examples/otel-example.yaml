@@ -1,0 +1,60 @@
+agentlet:
+  name: "otel-assistant"
+  version: "1.0.0"
+
+system_prompt: "You are a helpful assistant with full observability."
+
+model:
+  provider: "anthropic"
+  model_id: "claude-sonnet-4-5"
+
+observability:
+  otel:
+    # Enable OpenTelemetry trace export
+    enabled: true
+
+    # OTLP endpoint - base endpoint for traces and metrics
+    # Defaults to http://localhost:4318 or OTEL_EXPORTER_OTLP_ENDPOINT env var
+    # OpenTelemetry will automatically append /v1/traces and /v1/metrics
+    otlp_endpoint: "http://localhost:4318"
+
+    # Signal-specific endpoints (optional, override otlp_endpoint)
+    # Use these to send traces and metrics to different endpoints
+    # IMPORTANT: When using signal-specific endpoints, OpenTelemetry
+    # will automatically append /v1/traces and /v1/metrics paths
+    # otlp_traces_endpoint: "https://cloud.langfuse.com/api/public/otel"
+    # otlp_metrics_endpoint: "https://metrics.example.com/otlp"
+
+    # Console exporter - prints trace spans to stdout (useful for development)
+    # When enabled, you'll see detailed trace output in the console
+    console_exporter: true
+
+    # Sampler - controls which traces get exported
+    # Options:
+    #   - "always_on": Export all traces (good for development)
+    #   - "always_off": Export no traces
+    #   - "traceidratio": Export a percentage based on sampler_arg
+    #   - "parentbased_always_on": Follow parent span's sampling decision
+    sampler: "always_on"
+
+    # Sampler arg - for traceidratio, the percentage to export (0.0 to 1.0)
+    # Example: 0.1 = 10% of traces, useful for high-volume production
+    # sampler_arg: 0.1
+
+    # Metrics export - export metrics in addition to traces
+    enable_metrics: true
+
+    # Custom trace attributes - added to all trace spans
+    # These help identify and filter traces in your observability platform
+    trace_attributes:
+      environment: "development"
+      service.name: "agentlet-core"
+
+output:
+  show_messages: true
+  show_reasoning: true
+  show_tool_calls: true
+
+tools:
+  - "bash"
+  - "file_editor"

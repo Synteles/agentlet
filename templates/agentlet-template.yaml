@@ -1,0 +1,587 @@
+# ==============================================================================
+# Agentlet Configuration Template - YAML Format
+# ==============================================================================
+# This is a comprehensive template showing all available configuration options
+# for Synteles Agentlet. Copy and customize this file for your use case.
+#
+# Environment variables can be referenced using ${VAR_NAME} or $VAR_NAME syntax.
+# Special variable ${WORK_DIR} will be replaced with the working directory path.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# SECRETS (optional)
+# ------------------------------------------------------------------------------
+# List of secret names owned by this agentlet's creator.
+# Secrets are referenced by name only — not by ARN or path.
+# At runtime the Synteles Platform resolves each name relative to the agentlet
+# owner's UserId and injects the secret values into the execution environment.
+#
+# NOTE: This field is platform-only. agentlet-core silently ignores it —
+# secrets are injected before the process starts, not read from this field.
+#
+# Rules:
+#   - Optional; omit or leave empty for no secret injection
+#   - Each entry is a plain string (the secret name), never the actual value
+#   - Secrets are resolved relative to the agentlet owner, not the caller
+#   - Secret names are not validated on write — you can reference secrets
+#     that don't exist yet and create them later
+#
+# secrets:
+#   - anthropic-keys
+#   - database-credentials
+#   - my-api-token
+
+# ------------------------------------------------------------------------------
+# AGENTLET METADATA (required)
+# ------------------------------------------------------------------------------
+# Basic information about your agentlet
+agentlet:
+  # Name of the agentlet (required)
+  name: "my-agentlet"
+
+  # Version string (optional, defaults to "1.0.0")
+  version: "1.0.0"
+
+# ------------------------------------------------------------------------------
+# PROMPT (optional)
+# ------------------------------------------------------------------------------
+# Default user prompt/task for the agentlet to execute
+# Can be overridden via CLI with --prompt flag
+# If not provided here, --prompt must be specified on command line
+prompt: "Analyze the project structure and provide insights"
+
+# ------------------------------------------------------------------------------
+# SYSTEM PROMPT (required)
+# ------------------------------------------------------------------------------
+# Instructions that define the agentlet's behavior, personality, and capabilities
+# This is sent to the LLM as the system message
+system_prompt: |
+  You are a helpful AI assistant specialized in software development.
+
+  Your capabilities:
+  - Analyze code and provide insights
+  - Execute bash commands to inspect the system
+  - Read and write files
+  - Search documentation
+
+  Always:
+  - Be concise and accurate
+  - Explain your reasoning
+  - Ask for clarification when needed
+  - Prioritize security and best practices
+
+# ------------------------------------------------------------------------------
+# MODEL CONFIGURATION (required)
+# ------------------------------------------------------------------------------
+# LLM model provider and settings
+model:
+  # Model provider (required)
+  # Supported: anthropic, bedrock, openai, azure, vertex_ai, and any LiteLLM provider
+  # See: https://docs.litellm.ai/docs/providers
+  provider: "bedrock"
+
+  # Model identifier (required)
+  # Format varies by provider. Examples:
+  #   - bedrock: "claude-sonnet-4-5", "claude-opus-4"
+  #   - anthropic: "claude-3-5-sonnet-20241022"
+  #   - openai: "gpt-4o", "gpt-4-turbo"
+  #   - azure: "your-deployment-name"
+  model_id: "claude-sonnet-4-5"
+
+  # Model-specific parameters (optional)
+  # These are passed directly to the LLM API
+  parameters:
+    temperature: 0.7      # Randomness (0.0 = deterministic, 1.0 = creative)
+    top_p: 0.9            # Nucleus sampling threshold
+    top_k: 40             # Top-k sampling (provider-dependent)
+    # max_tokens: 4096    # Override resource_limits.max_tokens
+    # stop_sequences: ["END"]  # Custom stop sequences
+
+  # Retry configuration for handling transient errors (optional)
+  # Helps handle rate limits, API timeouts, and connection errors
+  retry:
+    # Maximum number of retry attempts (default: 5)
+    max_retries: 5
+
+    # Initial retry interval in seconds (default: 30.0)
+    # First retry waits this long after failure
+    initial_retry_interval: 30.0
+
+    # Exponential backoff factor (default: 2.0)
+    # Each retry interval = previous interval * backoff_factor
+    # Example: 30s, 60s, 120s, 240s with factor 2.0
+    backoff_factor: 2.0
+
+    # Maximum retry interval in seconds (default: 300.0)
+    # Caps the exponential backoff to prevent excessively long waits
+    max_retry_interval: 300.0
+
+    # List of error types to retry on (optional)
+    # Default list includes common transient errors
+    retry_on_errors:
+      - "RateLimitError"
+      - "EventLoopException"
+      - "APIConnectionError"
+      - "APITimeoutError"
+      - "litellm.RateLimitError"
+      # Add custom error types as needed
+
+# ------------------------------------------------------------------------------
+# DEFAULT TOOLS (optional)
+# ------------------------------------------------------------------------------
+# Built-in tools from strands-agents-tools package
+# Available tools (imported as strands_tools.<name>):
+#   - shell: Execute shell commands
+#   - editor: Advanced file editing (view, replace, insert)
+#   - file_read: Read file contents
+#   - file_write: Write or create files
+#   - use_computer: Computer interaction (keyboard, mouse, screenshots)
+#
+# Tools are loaded on-demand and require user consent by default
+# (consent is auto-granted in agentlet-core via BYPASS_TOOL_CONSENT=true)
+tools:
+  - file_read # Reading configuration files, parsing code files, loading datasets
+# - editor # Advanced file operations like syntax highlighting, pattern replacement, and multi-file edits
+# - file_write # Writing results to files, creating new files, saving output data
+# - shell # Executing shell commands, interacting with the operating system, running scripts
+# - http_request # Making API calls, fetching web data, sending data to external services
+# - tavily # Real-time web search optimized for AI agents with a variety of custom parameters
+# - python_repl # Running Python code snippets, data analysis, executing complex logic with user confirmation for security
+# - calculator # Performing mathematical operations, symbolic math, equation solving
+# - environment # Managing environment variables, configuration management
+# - current_time # Get the current time in ISO 8601 format for a specified timezone
+# - use_llm # Create nested AI loops with customized system prompts for specialized tasks
+# - workflow # Define, execute, and manage multi-step automated workflows
+# - batch # Call multiple other tools in parallel.
+
+# ------------------------------------------------------------------------------
+# MCP TOOLS (optional)
+# ------------------------------------------------------------------------------
+# Model Context Protocol tools integration
+# Supports stdio (subprocess), HTTP (streamable), and SSE (Server-Sent Events)
+# MCP servers provide additional tools and capabilities to the agent
+mcp_tools:
+  # --------------------------------------------------------------------------
+  # STDIO SERVER EXAMPLE
+  # --------------------------------------------------------------------------
+  # Launches MCP server as subprocess with stdin/stdout communication
+  - name: "filesystem"
+    server: "stdio"
+
+    # Command to execute (required for stdio)
+    command: "npx"
+
+    # Command arguments (optional for stdio)
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+      - "/path/to/allowed/directory"
+
+    # Environment variables for the subprocess (optional)
+    # ${WORK_DIR} will be replaced with the working directory
+    env:
+      ALLOWED_DIRECTORIES: "${WORK_DIR}"
+      DEBUG: "false"
+
+    # Tool name prefix (optional)
+    # Prevents naming conflicts when using multiple MCP servers
+    # Example: "read_file" becomes "fs_read_file"
+    prefix: "fs"
+
+    # Tool filters (optional)
+    # Control which tools from this server are loaded
+    tool_filters:
+      # Only load these specific tools (mutually exclusive with 'rejected')
+      allowed:
+        - "read_file"
+        - "write_file"
+        - "list_directory"
+      # Or reject specific tools (mutually exclusive with 'allowed')
+      # rejected:
+      #   - "delete_file"
+      #   - "execute_command"
+
+  # --------------------------------------------------------------------------
+  # HTTP (STREAMABLE) SERVER EXAMPLE
+  # --------------------------------------------------------------------------
+  # Connects to MCP server via HTTP with streaming support
+  - name: "web-search"
+    server: "http"
+
+    # Server URL (required for http/sse)
+    url: "https://api.example.com/mcp"
+
+    # HTTP headers (optional)
+    headers:
+      Content-Type: "application/json"
+      X-Custom-Header: "value"
+
+    # Environment variable containing API key (optional)
+    # Will be added as "Authorization: Bearer <key>" header if not already present
+    api_key_env: "SEARCH_API_KEY"
+
+    # Tool name prefix (optional)
+    prefix: "search"
+
+    # Tool filters (optional)
+    tool_filters:
+      allowed:
+        - "search_web"
+        - "search_images"
+
+  # --------------------------------------------------------------------------
+  # SSE (Server-Sent Events) SERVER EXAMPLE
+  # --------------------------------------------------------------------------
+  # Connects to MCP server via SSE for real-time event streaming
+  - name: "realtime-data"
+    server: "sse"
+
+    # Server URL (required for http/sse)
+    url: "https://api.example.com/mcp/events"
+
+    # Note: SSE client currently doesn't support custom headers
+    # Include authentication in the URL or handle server-side
+    # api_key_env is ignored for SSE servers
+
+    # Tool name prefix (optional)
+    prefix: "rt"
+
+    # Tool filters (optional)
+    tool_filters:
+      rejected:
+        - "dangerous_operation"
+
+# ------------------------------------------------------------------------------
+# SUB-AGENTLETS — MULTIAGENCY (optional)
+# ------------------------------------------------------------------------------
+# Transform this agentlet into an orchestrator by declaring inline sub-agentlets.
+# Each sub-agentlet becomes a callable tool the orchestrator's LLM can invoke
+# when delegating specialised tasks. Sub-agentlets run in-process — no subprocess
+# overhead, no IPC.
+#
+# When multi-agent IS the right choice:
+#   - Task decomposes into distinct stages with different expertise requirements
+#     (research → writing, data extraction → visualisation, plan → execute)
+#   - You want a capable model for reasoning and a cheaper model for generative tasks
+#   - Mixing concerns in one system prompt produces worse results than two focused ones
+#   - Natural handoff point exists: agent A produces output, agent B consumes it
+#
+# When a single agentlet is simpler and better:
+#   - The task is end-to-end homogeneous (e.g. "summarise these files")
+#   - A sub-agentlet would only call one tool and return — add the tool directly instead
+#   - You would need more than 3–4 sub-agentlets (too much orchestration complexity)
+#
+# Key rules:
+#   - name       — unique identifier; becomes the tool name the orchestrator calls
+#   - description — what the orchestrator LLM reads to decide when to call it;
+#                   be specific, start with a verb ("Searches…", "Transforms…")
+#   - system_prompt — specialisation instructions for this sub-agentlet
+#   - model      — omit to inherit the orchestrator's model; specify to override
+#   - tools / mcp_tools — same schema as top-level; each sub-agentlet has its own
+#   - output     — all options default to false (silent); opt in to show execution
+#   - No resource_limits, observability, or nested sub_agentlets per sub-agentlet
+#
+# sub_agentlets:
+#
+#   # Specialist 1 — inherits orchestrator's model
+#   - name: research_agent
+#     description: >
+#       Searches for factual information on a given topic and returns a concise
+#       summary with key findings and sources. Use for any task requiring
+#       up-to-date information or fact-checking.
+#     system_prompt: |
+#       You are a research specialist. Find accurate, up-to-date information on
+#       the given topic. Return a structured summary: key findings, supporting
+#       details, and sources. Be concise — a writer agent will use your output.
+#     tools:
+#       - tavily        # purpose-built web search for AI agents
+#       - http_request  # direct HTTP requests if needed
+#     # No model block — inherits the orchestrator's model
+#     output:
+#       show_messages: false    # set true to see sub-agentlet responses inline
+#       show_reasoning: false
+#       show_tool_calls: false  # set true to see tool invocations inline
+#
+#   # Specialist 2 — overrides model for cost optimisation
+#   - name: writing_agent
+#     description: >
+#       Transforms research notes, bullet points, or raw information into
+#       well-structured written content (reports, summaries, articles).
+#       Use after research_agent has gathered the necessary information.
+#     system_prompt: |
+#       You are a professional writer. Transform research notes into clear,
+#       well-structured content. Use headings and logical structure.
+#       Synthesise — do not just restate bullet points.
+#     model:
+#       provider: bedrock
+#       model_id: claude-haiku-4-5    # cheaper/faster model for generative tasks
+#       parameters:
+#         temperature: 0.7            # higher temperature for prose variety
+#     tools:
+#       - editor
+#     mcp_tools: []                   # MCP tools use the same schema as top-level
+
+# ------------------------------------------------------------------------------
+# SWARM — PEER-TO-PEER MULTIAGENCY (optional)
+# ------------------------------------------------------------------------------
+# Run a set of specialised agents that hand off directly to each other with no
+# central coordinator. Powered by strands.multiagent.Swarm.
+#
+# Three modes (selected by YAML alone):
+#
+#   Declarative  — Define agent types and counts in a `swarm:` block (below).
+#                  Runtime expands them; agents collaborate autonomously.
+#
+#   Dynamic      — Add "swarm" to `tools:` instead. A single orchestrator agent
+#                  gets strands_tools.swarm and provisions its own team at runtime.
+#
+#   Combined     — Both: a pre-defined panel plus the "swarm" tool for ad-hoc
+#                  sub-swarms the orchestrator spawns on demand.
+#
+# IMPORTANT: `swarm` and `sub_agentlets` are mutually exclusive — setting both
+# raises a ValidationError at config load time. The "combined" swarm mode
+# (swarm block + "swarm" in tools list) is not an exception: it lets a
+# pre-defined participant spawn ad-hoc sub-swarms dynamically via
+# strands_tools.swarm, but there are still no sub_agentlets defined.
+#
+# Name expansion:
+#   count=1  → name unchanged (e.g. solutions_architect)
+#   count>1  → name_1, name_2, … (e.g. solutions_architect_1, solutions_architect_2)
+#
+# Entry point: the participant that receives the initial prompt.
+#   Defaults to the first participant's first instance.
+#   Must be a base name (without the _N suffix).
+#
+# When swarm IS the right choice:
+#   - Multiple parallel experts with distinct knowledge domains
+#   - Peer review / adversarial debate patterns (no obvious single orchestrator)
+#   - Tasks where the next best agent to involve isn't known upfront
+#
+# When a single agentlet or sub_agentlets is simpler:
+#   - Clear sequential pipeline (A produces → B consumes)
+#   - One agent clearly orchestrates the others — use sub_agentlets instead
+#   - Fewer than 3 agents — a single well-prompted agent is usually enough
+#
+# swarm:
+#   # Base name of the participant that receives the initial prompt (optional)
+#   # Defaults to the first participant's first instance
+#   entry_point: solutions_architect
+#
+#   # Safety parameters (all optional — defaults match Strands SDK)
+#   max_handoffs: 20             # Maximum total handoffs before halting (default: 20)
+#   max_iterations: 20           # Maximum total agent iterations (default: 20)
+#
+#   # Swarm timeouts — set here in YAML, not via --timeout flag.
+#   # These are enforced by the Strands SDK internally across agent coordination:
+#   #   execution_timeout — hard ceiling on the entire swarm run
+#   #   node_timeout      — per-agent turn limit; prevents one agent blocking the panel
+#   # The outer --timeout flag (resource_limits.max_execution_time) remains a separate
+#   # process-level ceiling above these, and should also be raised to match.
+#   execution_timeout: 900.0     # Total swarm wall-clock limit in seconds (default: 900)
+#   node_timeout: 300.0          # Per-agent turn limit in seconds (default: 300)
+#
+#   repetitive_handoff_detection_window: 0     # Loop detection window (0 = disabled)
+#   repetitive_handoff_min_unique_agents: 0    # Min unique agents in window (0 = disabled)
+#
+#   participants:
+#     - name: solutions_architect
+#       count: 2             # Expands to solutions_architect_1, solutions_architect_2
+#       description: >
+#         Designs architecture and evaluates technical trade-offs. Use for
+#         system design, technology selection, and integration patterns.
+#       system_prompt: |
+#         You are a senior solutions architect on an expert panel. Design systems,
+#         evaluate trade-offs, and produce clear recommendations. Hand off to
+#         devops_engineer for infrastructure or operational concerns.
+#       tools:
+#         - http_request
+#       # model: omit to inherit top-level model; specify to override per participant
+#       # mcp_tools: []  — same schema as top-level mcp_tools
+#
+#     - name: devops_engineer
+#       count: 1             # count=1: name stays as devops_engineer (no suffix)
+#       description: >
+#         Handles infrastructure, CI/CD pipelines, and operational concerns. Use
+#         for deployment strategies, monitoring, scaling, and reliability topics.
+#       system_prompt: |
+#         You are a senior DevOps engineer on an expert panel. Address
+#         infrastructure, deployment, and reliability concerns with concrete,
+#         implementable guidance. Hand back to solutions_architect when
+#         architectural implications need re-evaluation.
+#       model:
+#         provider: bedrock
+#         model_id: claude-haiku-4-5   # cheaper model for lower-complexity roles
+#       tools:
+#         - shell
+#         - editor
+
+# ------------------------------------------------------------------------------
+# RESOURCE LIMITS (optional)
+# ------------------------------------------------------------------------------
+# Constraints on agentlet execution to prevent runaway token costs and tool loops.
+#
+# Timeout model:
+#   Singleton / sub-agentlet: execution timeout is set at launch time via the
+#     --timeout flag (or platform run config). Do NOT set max_execution_time here.
+#   Swarm: use swarm.execution_timeout and swarm.node_timeout in the swarm block
+#     above — those are passed directly to the Strands SDK. The --timeout flag
+#     acts as an independent outer ceiling and should be set to match or exceed
+#     swarm.execution_timeout.
+resource_limits:
+  # Maximum tokens for LLM generation (default: 10000)
+  # Includes both input and output tokens
+  # Can be overridden via CLI with --max-tokens flag
+  max_tokens: 10000
+
+  # Maximum number of tool calls allowed (default: 20)
+  # Prevents infinite loops of tool invocations
+  max_tool_calls: 20
+
+# ------------------------------------------------------------------------------
+# OUTPUT CONFIGURATION (optional)
+# ------------------------------------------------------------------------------
+# Controls how agentlet displays results
+output:
+  # Output format (default: "markdown")
+  # Options: "markdown", "json", "text"
+  # Can be overridden via CLI with --output-format flag
+  format: "markdown"
+
+  # Show complete assistant messages per turn (default: true)
+  # When true: displays full response text from the agent
+  # When false: only shows metadata and tool calls
+  show_messages: true
+
+  # Show agent reasoning steps (default: true)
+  # Displays the LLM's extended thinking/reasoning blocks
+  # Only shown when model supports reasoning (e.g., Claude with extended thinking)
+  show_reasoning: true
+
+  # Show tool invocations (default: true)
+  # Displays when tools are called with their parameters and results
+  show_tool_calls: true
+
+  # Show turn boundaries in multi-turn conversations (default: false)
+  # When true: displays visual separators between conversation turns
+  # Useful for debugging multi-turn agent interactions
+  show_turn_boundaries: false
+
+# ------------------------------------------------------------------------------
+# OBSERVABILITY CONFIGURATION (optional)
+# ------------------------------------------------------------------------------
+# OpenTelemetry integration for traces and metrics export
+# Enables comprehensive observability for production deployments
+observability:
+  otel:
+    # Enable OpenTelemetry trace export (default: false)
+    # When enabled, traces are sent to OTLP endpoint
+    enabled: false
+
+    # OTLP base endpoint URL (optional)
+    # Used as fallback if signal-specific endpoints not set
+    # OpenTelemetry will automatically append /v1/traces and /v1/metrics
+    # Defaults to http://localhost:4318 or OTEL_EXPORTER_OTLP_ENDPOINT env var
+    # otlp_endpoint: "http://localhost:4318"
+
+    # Signal-specific endpoints (optional)
+    # Override otlp_endpoint for traces and/or metrics
+    # IMPORTANT: OpenTelemetry automatically appends /v1/traces and /v1/metrics
+    # Example for Langfuse:
+    # otlp_traces_endpoint: "https://cloud.langfuse.com/api/public/otel"
+    # otlp_metrics_endpoint: "https://metrics.example.com/otlp"
+
+    # OTLP headers (optional)
+    # Custom headers sent with OTLP requests (e.g., authentication)
+    # Example for Langfuse:
+    # otlp_headers:
+    #   Authorization: "Bearer your-langfuse-secret-key"
+
+    # Console exporter (default: false)
+    # Prints trace spans to stdout for development/debugging
+    # Useful for verifying traces are being generated correctly
+    console_exporter: false
+
+    # Trace sampler type (optional)
+    # Controls which traces get exported to reduce volume/cost
+    # Options:
+    #   - "always_on": Export all traces (good for development)
+    #   - "always_off": Export no traces
+    #   - "traceidratio": Export a percentage based on sampler_arg
+    #   - "parentbased_always_on": Follow parent span's sampling decision
+    # sampler: "always_on"
+
+    # Sampler argument (optional)
+    # For traceidratio sampler: percentage to export (0.0 to 1.0)
+    # Example: 0.1 = 10% of traces (useful for high-volume production)
+    # sampler_arg: 0.1
+
+    # Enable metrics export (default: false)
+    # Export metrics in addition to traces
+    # Provides quantitative performance data (latency, throughput, etc.)
+    enable_metrics: false
+
+    # Custom trace attributes (optional)
+    # Added to all trace spans for filtering/grouping
+    # Useful for identifying service, environment, version, etc.
+    # trace_attributes:
+    #   environment: "production"
+    #   service.name: "agentlet-core"
+    #   service.version: "1.0.0"
+    #   deployment: "us-west-2"
+
+# ==============================================================================
+# ENVIRONMENT VARIABLES REQUIRED
+# ==============================================================================
+# Depending on your model provider, set these environment variables:
+#
+# AWS Bedrock:
+#   - AWS_ACCESS_KEY_ID
+#   - AWS_SECRET_ACCESS_KEY
+#   - AWS_REGION (optional, defaults to us-east-1)
+#
+# Anthropic:
+#   - ANTHROPIC_API_KEY
+#
+# Anthropic Foundry:
+#   - ANTHROPIC_FOUNDRY_API_KEY
+#   - ANTHROPIC_FOUNDRY_RESOURCE
+#
+# OpenAI:
+#   - OPENAI_API_KEY
+#
+# Azure OpenAI:
+#   - AZURE_API_KEY
+#   - AZURE_API_BASE
+#   - AZURE_API_VERSION
+#
+# Google Vertex AI:
+#   - GOOGLE_APPLICATION_CREDENTIALS (path to service account JSON)
+#   - VERTEX_PROJECT
+#   - VERTEX_LOCATION
+#
+# See LiteLLM documentation for other providers:
+# https://docs.litellm.ai/docs/providers
+#
+# ==============================================================================
+# USAGE EXAMPLES
+# ==============================================================================
+#
+# Run agentlet with this config:
+#   agentlet-core --agentlet agentlet-template.yaml
+#
+# Override prompt via CLI:
+#   agentlet-core --agentlet agentlet-template.yaml --prompt "New task"
+#
+# Override model via CLI:
+#   agentlet-core --agentlet agentlet-template.yaml --model "openai/gpt-4o"
+#
+# Enable debug logging:
+#   agentlet-core --agentlet agentlet-template.yaml --debug
+#
+# Set working directory:
+#   agentlet-core --agentlet agentlet-template.yaml --path /path/to/workspace
+#
+# Enable streaming with custom timeout:
+#   agentlet-core --agentlet agentlet-template.yaml --streaming --timeout 600
+#
+# ==============================================================================

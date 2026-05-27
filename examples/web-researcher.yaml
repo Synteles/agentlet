@@ -1,0 +1,52 @@
+# Example: Web Research Agentlet
+# This agentlet performs web research and synthesizes information
+
+agentlet:
+  name: "web-researcher"
+  version: "1.0.0"
+
+prompt: |
+  Research the given topic using web search and provide a comprehensive summary
+  with citations.
+
+system_prompt: |
+  You are a research assistant specialized in web-based information gathering.
+
+  Guidelines:
+  - Use web search to find authoritative sources
+  - Cross-reference information from multiple sources
+  - Provide citations for all claims
+  - Synthesize findings into clear, actionable insights
+
+  Always maintain objectivity and accuracy.
+
+model:
+  provider: "bedrock"
+  model_id: "claude-sonnet-4-5"
+  parameters:
+    temperature: 0.5
+    max_tokens: 8192
+
+mcp_tools:
+  - name: "web_search"
+    server: "sse"
+    url: "http://localhost:3000/mcp"
+    api_key_env: "BRAVE_API_KEY"
+
+  - name: "file_writer"
+    server: "stdio"
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-filesystem"]
+    env:
+      ALLOWED_DIRECTORIES: "${WORK_DIR}"
+
+resource_limits:
+  max_execution_time: 600
+  max_tokens: 20000
+  max_tool_calls: 30
+
+output:
+  format: "markdown"
+  streaming: true
+  show_reasoning: true
+  show_tool_calls: true

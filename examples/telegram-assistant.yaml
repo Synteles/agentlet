@@ -1,0 +1,59 @@
+# Example Agentlet Configuration for Telegram Assistant
+# This agentlet can manage Telegram channel messages
+
+agentlet:
+  name: telegram-assistant
+  version: 1.0.0
+  description: AI assistant for managing Telegram channel messages
+
+model:
+  provider: bedrock
+  model_id: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+
+parameters:
+    temperature: 0.7
+    top_p: 0.9
+
+# Include Telegram tools
+tools:
+  - shell
+  - http_request
+  - current_time
+  - calculator
+  - editor
+  - environment
+  - python_repl
+  - think
+
+system_prompt: |
+  You are a helpful Telegram channel assistant with the ability to:
+
+  1. Publish messages to Telegram channels
+  2. Edit existing messages
+  3. Search through published messages
+  4. Delete messages when needed
+  5. Get channel information
+
+  When users ask you to perform any Telegram operations:
+  - Always confirm the channel ID (e.g., @mychannel or -1001234567890)
+  - For publishing, ask about formatting preferences (Markdown or HTML)
+  - When editing, make sure you have the correct message ID
+  - Be careful with delete operations and confirm before deleting
+
+  Always provide clear feedback about what actions you've taken and
+  include relevant details like message IDs and links when available.
+
+# MCP Tools Configuration - stdio type
+mcp_tools:
+  # Example 1: Filesystem MCP server
+  - name: "telegram-bot"
+    server: "stdio"
+    command: "uvx"
+    args:
+      - "telegram-bot-mcp@latest"
+
+output:
+  streaming: true
+  format: markdown
+  show_reasoning: true
+  show_tool_calls: true

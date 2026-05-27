@@ -1,0 +1,91 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# GitHub
+.github/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+.virtualenv/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+*.egg
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Type checking and linting
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD and development tools
+Makefile
+.editorconfig
+.pre-commit-config.yaml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Docker files (we're in Docker build, no need to copy these)
+Dockerfile*
+docker-compose*.yml
+.dockerignore

@@ -1,0 +1,130 @@
+# Multi-Agent Orchestrator Example
+#
+# This example demonstrates the "agent as a tool" multiagency pattern:
+# an orchestrator agentlet delegates specialised tasks to sub-agentlets.
+#
+# How it works:
+#   1. The orchestrator receives the user prompt.
+#   2. It decides which sub-agentlet(s) to call based on the prompt.
+#   3. Each sub-agentlet runs in-process as a Strands tool, executes its
+#      task, and returns a result string to the orchestrator.
+#   4. The orchestrator synthesises the sub-agentlet results into a final
+#      response.
+#
+# Run with:
+#   uv run agentlet-core --agentlet examples/agentlets/multi-agent-example.yaml \
+#     --prompt "Research the latest trends in vector databases and write a short report"
+
+agentlet:
+  name: research-and-write-orchestrator
+  version: "1.0.0"
+
+# The orchestrator's system prompt describes the available sub-agentlets so
+# the model knows when and how to delegate work.
+system_prompt: |
+  You are an orchestrator that coordinates two specialised agents to complete
+  research and writing tasks.
+
+  Available agents:
+  - research_agent: Use this to gather factual information, search the web,
+    and summarise sources on a topic.
+  - writing_agent: Use this to produce well-structured written content
+    (reports, summaries, drafts) from research notes or bullet points.
+
+  Workflow:
+  1. Analyse the user request to determine what research is needed.
+  2. Call research_agent with a focused research query.
+  3. Pass the research findings to writing_agent to produce polished output.
+  4. Present the final written result to the user.
+
+  Always delegate: do not try to research or write yourself — use the agents.
+
+model:
+  provider: bedrock
+  model_id: arn:aws:bedrock:eu-central-1::inference-profile/eu.anthropic.claude-haiku-4-5-20251001-v1:0
+  parameters:
+    temperature: 1
+
+# Sub-agentlets are defined inline. Each becomes a callable tool available
+# to the orchestrator at runtime.
+sub_agentlets:
+
+  # Research specialist — searches the web and summarises findings.
+  # Uses the http_request tool to fetch pages and retrieve information.
+  - name: research_agent
+    description: >
+      Searches for factual information on a given topic, retrieves relevant
+      sources, and returns a concise research summary with key findings.
+      Use for any task requiring up-to-date information or fact-checking.
+    system_prompt: |
+      You are a research specialist. Your job is to find accurate, up-to-date
+      information on the given topic.
+
+      Guidelines:
+      - Search for multiple sources when possible.
+      - Extract key facts, statistics, and insights.
+      - Note the recency of information where relevant.
+      - Return a structured summary: key findings, supporting details, sources.
+      - Be concise — the orchestrator will use your summary as input to a writer.
+    tools:
+      - tavily
+      - shell
+    # No model override — inherits the orchestrator's model (claude-sonnet-4-5).
+    model:
+      # Override: use a faster model for the writing task.
+      # Remove this block to inherit the orchestrator's model instead.
+      provider: azure_ai
+      model_id: gpt-5.3-chat
+      parameters:
+        temperature: 1
+
+    output:
+      show_messages: true
+      show_reasoning: true
+      show_tool_calls: true
+
+
+  # Writing specialist — turns research notes into polished prose.
+  # Uses a cheaper/faster model since this is a generative, not reasoning task.
+  - name: writing_agent
+    description: >
+      Transforms research notes, bullet points, or raw information into
+      well-structured written content (reports, summaries, articles).
+      Use after research_agent has gathered the necessary information.
+    system_prompt: |
+      You are a professional writer. Your job is to transform research notes
+      and raw information into clear, well-structured written content.
+
+      Guidelines:
+      - Write for a professional, informed audience.
+      - Use clear headings and logical structure.
+      - Synthesise information — do not just restate bullet points.
+      - Aim for clarity and conciseness.
+      - Produce the final content ready for presentation to the user.
+    model:
+      # Override: use a faster model for the writing task.
+      # Remove this block to inherit the orchestrator's model instead.
+      provider: azure_ai
+      model_id: gpt-5.3-chat
+      parameters:
+        temperature: 1   # Higher temperature for more varied prose
+
+    output:
+      show_messages: true
+      show_reasoning: true
+      show_tool_calls: true
+
+resource_limits:
+  max_execution_time: 300   # 5 minutes — research + writing can take time
+  max_tokens: 8000
+
+observability:
+  otel:
+    enabled: true
+
+output:
+  format: markdown
+  show_messages: true
+  show_reasoning: true
+  show_tool_calls: true
+  show_turn_boundaries: false

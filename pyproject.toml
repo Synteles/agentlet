@@ -1,0 +1,57 @@
+[project]
+name = "agentlet-core"
+version = "0.1.0a1"
+description = "Autonomous AI agent runtime - standardized, containerized units of AI agency"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.13"
+dependencies = [
+    "python-dotenv>=1.0.0",
+    "litellm>=1.83.10",
+    "pydantic>=2.0.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0.0",
+    "strands-agents[litellm,otel]>=1.18.0",
+    "strands-agents-tools>=0.2.22",
+]
+
+[project.scripts]
+agentlet-core = "agentlet_core.cli.main:cli"
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.0",
+    "mypy>=1.18.2",
+    "pytest>=9.0.1",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.14.6",
+    "types-pyyaml>=6.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "strict"
+# Exclude old stash directory and external tools
+norecursedirs = ["stash", "tools"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+exclude = [
+    "^stash/",
+    "^tools/",
+]

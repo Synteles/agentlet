@@ -1,0 +1,9 @@
+services:
+  synteles-agentlet:
+    container_name: agentlet
+    image: synteles/agentlet-core:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env

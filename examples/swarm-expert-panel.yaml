@@ -1,0 +1,101 @@
+# Declarative Expert Panel — Swarm Pattern
+#
+# Demonstrates the "expert panel" use case: multiple instances of each role
+# collaborate via autonomous handoffs. No central orchestrator — agents decide
+# for themselves who to involve next.
+#
+# Panel composition:
+#   2x Solutions Architect  — architecture and technical trade-offs
+#   3x DevOps Engineer      — infrastructure, CI/CD, reliability
+#   2x Domain Expert        — domain knowledge and business context
+#
+# Run with:
+#   uv run agentlet-core \
+#     --agentlet examples/agentlets/swarm-expert-panel.yaml \
+#     --prompt "Design a highly available payments processing system"
+
+agentlet:
+  name: expert-panel
+  version: "1.0.0"
+
+system_prompt: |
+  You are a solutions architect on an expert panel. Collaborate with your peers to
+  produce the best possible answer. Hand off to devops_engineer_* agents for
+  infrastructure, reliability, and operational concerns. Hand off to domain_expert_*
+  agents when you need business context or domain-specific knowledge. Synthesise
+  all contributions into a final recommendation before completing.
+
+model:
+  provider: bedrock
+  model_id: claude-sonnet-4-5
+  parameters:
+    temperature: 0.7
+
+swarm:
+  entry_point: solutions_architect
+  max_handoffs: 30
+  max_iterations: 30
+  execution_timeout: 1800
+  node_timeout: 300
+  repetitive_handoff_detection_window: 8
+  repetitive_handoff_min_unique_agents: 3
+
+  participants:
+    - name: solutions_architect
+      count: 2
+      description: >
+        Designs system architecture, evaluates technical trade-offs, and
+        produces architectural recommendations. Use for system design,
+        technology selection, and integration patterns.
+      system_prompt: |
+        You are a senior solutions architect on an expert panel. Your role is
+        to design systems, evaluate trade-offs, and produce clear technical
+        recommendations. When you need infrastructure detail, hand off to a
+        devops_engineer. When you need domain context, hand off to a
+        domain_expert. Synthesise all input before concluding.
+      tools:
+        - http_request
+
+    - name: devops_engineer
+      count: 3
+      description: >
+        Handles infrastructure, CI/CD pipelines, reliability engineering,
+        and operational concerns. Use for deployment strategies, monitoring,
+        scaling, and site reliability topics.
+      system_prompt: |
+        You are a senior DevOps engineer on an expert panel. Your role is to
+        address infrastructure, deployment, and reliability concerns. Provide
+        concrete, implementable guidance. Hand off back to solutions_architect
+        when the architectural implications need re-evaluation.
+      tools:
+        - shell
+        - file_editor
+
+    - name: domain_expert
+      count: 2
+      description: >
+        Provides domain-specific knowledge, regulatory context, and business
+        requirements. Use when business rules, compliance, or industry-specific
+        knowledge is needed to inform technical decisions.
+      system_prompt: |
+        You are a domain expert on an expert panel. Your role is to provide
+        business context, regulatory requirements, and domain-specific knowledge
+        that shapes technical decisions. Be precise about constraints and
+        requirements. Hand off to solutions_architect when architectural
+        decisions need to incorporate your input.
+      tools:
+        - tavily
+
+resource_limits:
+  max_execution_time: 1800
+  max_tokens: 8000
+
+output:
+  format: markdown
+  show_messages: true
+  show_tool_calls: true
+  show_turn_boundaries: false
+
+observability:
+  otel:
+    enabled: false

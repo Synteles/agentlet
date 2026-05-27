@@ -1,0 +1,30 @@
+title = "Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+# Allowlist paths that intentionally contain fake/example secret patterns.
+# These are NOT real secrets — they are test fixtures, docstring examples,
+# and documentation placeholders.
+[[allowlists]]
+id = "test-fixtures"
+description = "Test files intentionally use fake tokens/keys as fixtures to verify secret sanitization behavior. test_remote_loader.py exists only in git history (file deleted) and contains fake API keys used as test fixtures."
+paths = [
+    '''tests/unit/test_logging_filters\.py''',
+    '''tests/unit/test_remote_loader\.py''',
+]
+
+[[allowlists]]
+id = "code-examples"
+description = "Docstring examples in the logging filters module use fake API key patterns to illustrate sanitization behavior"
+paths = [
+    '''agentlet_core/logging/filters\.py''',
+]
+
+[[allowlists]]
+id = "documentation"
+description = "Documentation and project files use placeholder/example values — not real credentials"
+paths = [
+    '''docs/.*''',
+    '''CLAUDE\.md''',
+]

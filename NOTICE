@@ -1,0 +1,63 @@
+Synteles Agentlet
+Copyright 2026 Emin Askerov
+
+This product includes software developed by the Synteles project.
+
+The Synteles source code is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full license text.
+
+The Synteles name, logo, and related brand assets are not licensed under
+the Apache License, Version 2.0. See TRADEMARKS.md for details.
+
+---
+
+## Required Third-Party Notices
+
+This product includes the following third-party software. Attribution notices
+required by their respective licenses are reproduced below.
+
+### strands-agents
+Apache License 2.0
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+https://github.com/strands-agents/sdk-python
+
+### strands-agents-tools
+Apache License 2.0
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+https://github.com/strands-agents/tools
+
+### litellm
+MIT License
+Copyright (c) 2023 Berri AI
+https://github.com/BerriAI/litellm
+
+### pydantic
+MIT License
+Copyright (c) 2017 to present Pydantic Services Inc. and individual contributors.
+https://github.com/pydantic/pydantic
+
+### click
+BSD 3-Clause License
+Copyright 2014 Pallets
+https://github.com/pallets/click
+
+### rich
+MIT License
+Copyright (c) 2020 Will McGugan
+https://github.com/Textualize/rich
+
+### PyYAML
+MIT License
+Copyright (c) 2017-2021 Ingy döt Net
+Copyright (c) 2006-2016 Kirill Simonov
+https://github.com/yaml/pyyaml
+
+### python-dotenv
+BSD 3-Clause License
+Copyright (c) 2014, Saurabh Kumar (python-dotenv)
+Copyright (c) 2013, Ted Tieken (django-dotenv-rw)
+Copyright (c) 2013, Jacob Kaplan-Moss (django-dotenv)
+https://github.com/theskumar/python-dotenv
+
+Full license texts for all third-party components are available in the
+THIRD_PARTY_LICENSES/ directory.

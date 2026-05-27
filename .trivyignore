@@ -1,0 +1,6 @@
+# CVE-2026-33671: picomatch HIGH vulnerability (fixed in 4.0.4)
+# Affected package: picomatch 4.0.3 bundled inside nvm's internal npm tooling at /root/.nvm/
+# nvm is used solely to install Node.js for MCP tool execution; picomatch is part of npm's
+# own dependency tree and is not reachable from the application's runtime code path.
+# Risk: LOW for this application — no user-controlled input passes through this code path.
+CVE-2026-33671

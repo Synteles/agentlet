@@ -1,0 +1,99 @@
+# Combined Swarm — Pre-defined Panel + Dynamic Sub-swarms
+#
+# The entry-point agent has both a pre-defined peer panel AND the swarm tool.
+# Standard work is delegated within the panel via autonomous handoffs.
+# When the panel lacks required expertise, the entry agent can spin up an
+# ad-hoc sub-swarm on the fly.
+#
+# Run with:
+#   uv run agentlet-core \
+#     --agentlet examples/agentlets/swarm-combined.yaml \
+#     --prompt "Design and document a microservices migration plan for a monolithic e-commerce platform"
+
+agentlet:
+  name: combined-swarm-orchestrator
+  version: "1.0.0"
+
+system_prompt: |
+  You are a solutions architect leading an expert panel. You have two ways to
+  collaborate:
+
+  1. Peer handoffs: pass work directly to devops_engineer_* or domain_expert_*
+     agents in your panel for their specialist input.
+
+  2. Ad-hoc swarm: if the task requires expertise outside your panel (e.g.
+     security auditing, data architecture), use the swarm tool to assemble a
+     temporary specialist team.
+
+  Always prefer peer handoffs for speed. Use the swarm tool only when you
+  need expertise genuinely outside your panel.
+
+model:
+  provider: bedrock
+  model_id: claude-sonnet-4-5
+  parameters:
+    temperature: 0.7
+
+tools:
+  - swarm
+
+swarm:
+  entry_point: solutions_architect
+  max_handoffs: 40
+  max_iterations: 40
+  execution_timeout: 2700
+  node_timeout: 300
+  repetitive_handoff_detection_window: 8
+  repetitive_handoff_min_unique_agents: 3
+
+  participants:
+    - name: solutions_architect
+      count: 2
+      description: >
+        Designs architecture, evaluates trade-offs, and coordinates the panel.
+        Entry point for all tasks.
+      system_prompt: |
+        You are a senior solutions architect. Lead the expert panel and
+        coordinate peer collaboration. Use devops_engineer_* for operational
+        concerns, domain_expert_* for business context, and the swarm tool
+        for expertise outside the panel.
+      tools:
+        - http_request
+
+    - name: devops_engineer
+      count: 3
+      description: >
+        Infrastructure, CI/CD, reliability, and operations. Use for deployment
+        architecture, monitoring, and site reliability engineering.
+      system_prompt: |
+        You are a senior DevOps engineer. Provide concrete, implementable
+        infrastructure and operational guidance. Hand off back to
+        solutions_architect when architectural decisions are needed.
+      tools:
+        - shell
+        - file_editor
+
+    - name: domain_expert
+      count: 2
+      description: >
+        Business domain knowledge, regulatory requirements, and industry
+        context. Use when domain constraints must inform technical decisions.
+      system_prompt: |
+        You are a domain expert. Provide business context, regulatory
+        constraints, and domain-specific requirements. Be precise. Hand off
+        to solutions_architect when your input needs to shape architecture.
+      tools:
+        - tavily
+
+resource_limits:
+  max_execution_time: 2700
+  max_tokens: 10000
+
+output:
+  format: markdown
+  show_messages: true
+  show_tool_calls: true
+
+observability:
+  otel:
+    enabled: false

@@ -1,0 +1,28 @@
+# Example: Simple Assistant Agentlet
+# A basic conversational assistant with minimal configuration
+
+agentlet:
+  name: "simple-assistant"
+  version: "1.0.0"
+
+system_prompt: |
+  You are a helpful assistant that can answer questions and help with tasks.
+  Be concise and clear in your responses.
+
+model:
+  provider: "anthropic"
+  model_id: "claude-sonnet-4-6"
+  parameters:
+    temperature: 0.7
+    max_tokens: 2048
+
+resource_limits:
+  max_execution_time: 120
+  max_tokens: 5000
+  max_tool_calls: 10
+
+output:
+  format: "text"
+  streaming: true
+  show_reasoning: false
+  show_tool_calls: false

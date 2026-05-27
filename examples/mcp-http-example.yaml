@@ -1,0 +1,60 @@
+# Example agentlet configuration with HTTP MCP tools
+# This demonstrates using HTTP-based MCP servers with authentication
+
+agentlet:
+  name: "mcp-http-example"
+  description: "Example agentlet using HTTP MCP tools"
+
+model:
+  provider: "bedrock"
+  model_id: "claude-sonnet-4-5"
+  parameters:
+    temperature: 0.7
+
+# MCP Tools Configuration - http type (streamable HTTP)
+mcp_tools:
+  # Example: HTTP-based MCP server with API key authentication
+  - name: "custom-api"
+    server: "http"
+    url: "https://api.example.com/mcp/"
+    # API key from environment variable (automatically added as Bearer token)
+    api_key_env: "CUSTOM_API_KEY"
+    # Optional: Additional custom headers
+    headers:
+      X-Custom-Header: "custom-value"
+    # Optional: Prefix for tool names
+    prefix: "api"
+    # Optional: Filter which tools to load
+    tool_filters:
+      rejected:
+        - "dangerous_tool"
+        - "deprecated_tool"
+
+  # Example: Another HTTP MCP server without API key
+  - name: "public-service"
+    server: "http"
+    url: "http://localhost:8080/mcp/"
+    headers:
+      Content-Type: "application/json"
+    prefix: "pub"
+
+# Default Strands tools
+tools:
+  - "bash"
+
+system_prompt: |
+  You are an AI assistant with access to external HTTP-based MCP services.
+  Use the available API tools to help users with their queries.
+
+prompt: "Check the status of the API service."
+
+resource_limits:
+  max_execution_time: 300
+  max_tokens: 10000
+  max_tool_calls: 20
+
+output:
+  format: "markdown"
+  streaming: true
+  show_reasoning: true
+  show_tool_calls: true

@@ -1,0 +1,48 @@
+# Example agentlet configuration with SSE MCP tools
+# This demonstrates using Server-Sent Events (SSE) based MCP servers
+
+agentlet:
+  name: "mcp-sse-example"
+  description: "Example agentlet using SSE MCP tools"
+
+model:
+  provider: "bedrock"
+  model_id: "claude-sonnet-4-5"
+  parameters:
+    temperature: 0.7
+
+# MCP Tools Configuration - sse type (Server-Sent Events)
+mcp_tools:
+  # Example: SSE-based MCP server
+  - name: "sse-service"
+    server: "sse"
+    url: "http://localhost:8000/sse"
+    # Note: SSE client doesn't support custom headers
+    # Include authentication in the URL if needed (e.g., ?token=xxx)
+    prefix: "sse"
+    tool_filters:
+      allowed:
+        - "stream_data"
+        - "get_updates"
+
+# Default Strands tools
+tools:
+  - "bash"
+  - "file_editor"
+
+system_prompt: |
+  You are an AI assistant with access to a real-time event streaming service.
+  Use the SSE tools to monitor and retrieve streaming data.
+
+prompt: "Get the latest updates from the streaming service."
+
+resource_limits:
+  max_execution_time: 300
+  max_tokens: 10000
+  max_tool_calls: 20
+
+output:
+  format: "markdown"
+  streaming: true
+  show_reasoning: true
+  show_tool_calls: true

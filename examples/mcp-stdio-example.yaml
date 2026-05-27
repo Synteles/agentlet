@@ -1,0 +1,62 @@
+# Example agentlet configuration with stdio MCP tools
+# This demonstrates using local command-line MCP servers
+
+agentlet:
+  name: "mcp-stdio-example"
+  description: "Example agentlet using stdio MCP tools"
+
+model:
+  provider: "bedrock"
+  model_id: "claude-sonnet-4-5"
+  parameters:
+    temperature: 0.7
+
+# MCP Tools Configuration - stdio type
+mcp_tools:
+  # Example 1: Filesystem MCP server
+  - name: "filesystem"
+    server: "stdio"
+    command: "npx"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+    env:
+      # ${WORK_DIR} will be automatically expanded to the agentlet's working directory
+      ALLOWED_DIRECTORIES: "${WORK_DIR}"
+    # Optional: Add prefix to prevent naming conflicts
+    prefix: "fs"
+
+  # Example 2: AWS Documentation MCP server
+  - name: "aws-docs"
+    server: "stdio"
+    command: "uvx"
+    args:
+      - "awslabs.aws-documentation-mcp-server@latest"
+    # Optional: Filter which tools to load
+    tool_filters:
+      allowed:
+        - "search_documentation"
+        - "read_documentation"
+    prefix: "aws"
+
+# Default Strands tools (optional, can be combined with MCP tools)
+tools:
+  - "bash"
+  - "file_editor"
+
+system_prompt: |
+  You are a helpful AI assistant with access to filesystem operations and AWS documentation.
+  Use the available tools to help users with their tasks.
+
+prompt: "List files in the current directory and search for Python best practices in AWS docs."
+
+resource_limits:
+  max_execution_time: 300
+  max_tokens: 10000
+  max_tool_calls: 20
+
+output:
+  format: "markdown"
+  streaming: true
+  show_reasoning: true
+  show_tool_calls: true

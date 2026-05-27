@@ -1,0 +1,51 @@
+# Dynamic Swarm — LLM-Provisioned Team
+#
+# The orchestrator agent receives the swarm tool and decides at runtime what
+# specialists to assemble, how many to create, and what tools to give them.
+# No panel is pre-defined — the LLM writes the full agent specifications.
+#
+# Use this pattern when:
+#   - The required expertise cannot be known in advance
+#   - Tasks vary significantly in the skills they require
+#   - You want the LLM to reason about team composition
+#
+# Run with:
+#   uv run agentlet-core \
+#     --agentlet examples/agentlets/swarm-dynamic.yaml \
+#     --prompt "Research and summarise the latest breakthroughs in quantum error correction"
+
+agentlet:
+  name: dynamic-swarm-orchestrator
+  version: "1.0.0"
+
+system_prompt: |
+  You are a problem-solving orchestrator. When given a complex task, use the
+  swarm tool to assemble a bespoke team of specialised agents.
+
+  Before launching a swarm:
+  1. Identify what types of expertise the task requires.
+  2. Define one agent per specialisation with a clear system_prompt and
+     relevant tools (e.g. tavily for research, shell for code execution).
+  3. Set a realistic entry_point — the first agent that should receive the task.
+  4. Launch the swarm and present its final output to the user.
+
+  Do not attempt to answer complex multi-domain questions yourself — use
+  the swarm to leverage specialist agents.
+
+model:
+  provider: bedrock
+  model_id: claude-sonnet-4-5
+  parameters:
+    temperature: 0.7
+
+tools:
+  - swarm
+
+resource_limits:
+  max_execution_time: 1800
+  max_tokens: 8000
+
+output:
+  format: markdown
+  show_messages: true
+  show_tool_calls: true
