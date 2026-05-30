@@ -6,14 +6,38 @@ This document provides a high-level view of agentlet-core's architecture, compon
 
 Agentlet-core is a Python runtime for autonomous AI agents built on the Strands Agent Framework. It implements an ephemeral execution model where agents are spawned, execute tasks, and terminate cleanly with no persistent state.
 
-**Key Characteristics:**
-- Ephemeral lifecycle (spawn → execute → terminate)
-- Multi-provider LLM support via LiteLLM
-- MCP (Model Context Protocol) tools integration
-- Multiagency via inline sub-agentlets ("agent as a tool" pattern)
-- Rich console output with observability
-- Declarative YAML/JSON configuration
-- OpenTelemetry-ready telemetry
+## Key Characteristics:
+
+**1. Ephemeral Execution**
+- No persistent state between runs
+- Clean spawn → execute → terminate lifecycle
+- Fresh context for each execution
+
+**2. Declarative Configuration**
+- YAML/JSON configuration files
+- Pydantic validation
+- Environment variable expansion
+
+**3. Multi-Provider LLM Support**
+- Works with any LiteLLM-compatible provider
+- Unified model string format: `provider/model_id`
+- Cost tracking and token usage
+
+**4. Rich Tooling**
+- Default Strands tools (bash, file_editor, computer)
+- MCP protocol tools (stdio, HTTP, SSE)
+- Tool filtering and prefixing
+
+**5. Multiagency**
+- Inline sub-agentlets defined in YAML, each callable as a tool
+- Orchestrator delegates specialised tasks; sub-agents return results as strings
+- Per-sub-agentlet statistics: execution time, token usage, cost
+- Sub-agent OTel spans auto-nested under the orchestrator's trace
+
+**6. Production-Ready Observability**
+- 3-layer logging system
+- OpenTelemetry traces and metrics
+- Automatic secret sanitization
 
 ## Layered Architecture
 
