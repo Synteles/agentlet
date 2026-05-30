@@ -4,7 +4,7 @@
 
 # Synteles Agentlet
 
-**Agentlet** is a lightweight harness for building composable AI workers with tools, customization and traceable execution.
+**Synteles Agentlet** is a lightweight harness for building composable AI workers with tools, customization and traceable execution.
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
@@ -18,15 +18,17 @@
 
 ## Overview
 
-Synteles Agentlet is a Python runtime for autonomous AI agents built on the Strands Agent Framework.
+Synteles Agentlet is an AI agent runtime that works standalone or as the execution layer within the Synteles platform:
 
-- **Ephemeral execution** — clean spawn → execute → terminate lifecycle
-- **Multi-provider LLM** — Anthropic, AWS Bedrock, OpenAI, Azure, and more via LiteLLM
-- **MCP tools** — integrate external tools via stdio, HTTP, and SSE transports
+- **Ephemeral execution** — spawn > execute > terminate lifecycle
+- **Multi-provider LLM** — Anthropic, AWS Bedrock, OpenAI, Azure, Ollama and 100+ more via LiteLLM
+- **MCP support** — integrate external tools via stdio, HTTP, and SSE transports
+- **Tools** — shell, file editor, HTTP requests, Python REPL, web search, calculator, current time, and more — ready to use by name with no extra setup
 - **Multiagency** — orchestrator/sub-agentlet pipelines and peer-to-peer swarm patterns
-- **Declarative config** — YAML/JSON with Pydantic validation and JSON Schema
+- **Declarative config** — YAML DSL/JSON with Pydantic validation and JSON Schema
 - **Production observability** — 3-layer logging, OpenTelemetry traces/metrics, secret sanitization
 - **Multimodal input** — pass images (local files, HTTP URLs, base64) to vision-capable models via `--image`
+- **Timeouts and retries** — multi-level execution timeouts and declarative exponential backoff retry with per-error-class targeting, configurable backoff factor, initial interval, and interval cap
 
 ## Installation
 
