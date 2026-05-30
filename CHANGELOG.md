@@ -10,6 +10,7 @@ Before `v1.0`, breaking changes may occur without a major version bump.
 
 ### Changed
 
+- Strengthened PR checks: added 85% coverage threshold, arm64 Docker build validation, and Trivy SARIF upload to the GitHub Security tab; removed redundant summary job in favour of direct branch protection rules.
 - Restructured documentation layout: consolidated observability docs into `docs/reference/`, removed stale files (`ci-cd.md`, `deployment.md`, `versioning.md`, `core-concepts.md`), rewrote architecture docs to remove duplicated source code in favour of diagrams and tables, and synced README badges and section links with the current docs structure.
 - Standardised product name to "Synteles Agentlet" across all community docs (`GOVERNANCE.md`, `TRADEMARKS.md`, `SECURITY.md`, `NOTICE`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`); fixed stale `docs/observability/` path in `CONTRIBUTING.md`; expanded `README.md` Overview with off-the-shelf tools, timeouts and retries, and a polished intro sentence.
 
