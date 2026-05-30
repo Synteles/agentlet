@@ -146,25 +146,3 @@ jobs:
       - name: Run Gitleaks secret scan
         run: |
           gitleaks detect --source . --log-opts="--all" --config .gitleaks.toml --verbose
-
-  summary:
-    name: Checks Summary
-    runs-on: ubuntu-latest
-    needs: [quality-checks, docker-build-test, secret-scanning]
-    if: always()
-
-    steps:
-      - name: Check results
-        env:
-          QUALITY_RESULT: ${{ needs.quality-checks.result }}
-          DOCKER_RESULT: ${{ needs.docker-build-test.result }}
-          SECRETS_RESULT: ${{ needs.secret-scanning.result }}
-        run: |
-          if [ "$QUALITY_RESULT" != "success" ] || \
-             [ "$DOCKER_RESULT" != "success" ] || \
-             [ "$SECRETS_RESULT" != "success" ]; then
-            echo "❌ Some checks failed!"
-            exit 1
-          else
-            echo "✅ All checks passed!"
-          fi
