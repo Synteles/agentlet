@@ -100,13 +100,14 @@ jobs:
       - name: Compute Docker tags
         id: docker_tags
         env:
-          REPO: ${{ secrets.DOCKERHUB_USERNAME }}/agentlet-core
+          REPO: synteles/agentlet
           VERSION: ${{ steps.version.outputs.version }}
           MAJOR: ${{ steps.version.outputs.major }}
           MINOR: ${{ steps.version.outputs.minor }}
           PRERELEASE: ${{ steps.version.outputs.prerelease }}
         run: |
-          TAGS="${REPO}:${VERSION}"
+          TAGS="${REPO}:${VERSION}
+          ${REPO}:edge"
           if [ "$PRERELEASE" == "false" ]; then
             TAGS="${TAGS}
           ${REPO}:${MAJOR}
@@ -135,7 +136,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/agentlet-core
+          repository: synteles/agentlet
           short-description: "Agentlet Core - Autonomous AI agent runtime"
           readme-filepath: ./README.md
         continue-on-error: true
@@ -184,7 +185,7 @@ jobs:
           echo "" >> release_notes.md
           echo "### Docker (Recommended)" >> release_notes.md
           echo '```bash' >> release_notes.md
-          echo "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/agentlet-core:${{ steps.version.outputs.version }}" >> release_notes.md
+          echo "docker pull synteles/agentlet:${{ steps.version.outputs.version }}" >> release_notes.md
           echo '```' >> release_notes.md
           echo "" >> release_notes.md
           echo "### Python Package from GitHub Release" >> release_notes.md
@@ -244,7 +245,7 @@ jobs:
 
           if [ "${{ needs.build-push-docker.result }}" == "success" ]; then
             echo "✅ **Docker Hub**: Published successfully" >> $GITHUB_STEP_SUMMARY
-            echo "   - \`docker pull ${{ secrets.DOCKERHUB_USERNAME }}/agentlet-core:${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+            echo "   - \`docker pull synteles/agentlet:${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
             echo "   - Platforms: linux/amd64, linux/arm64" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **Docker Hub**: Failed" >> $GITHUB_STEP_SUMMARY
