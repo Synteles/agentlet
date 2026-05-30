@@ -47,6 +47,5 @@ resource_limits:
 
 output:
   format: "markdown"
-  streaming: true
   show_reasoning: true
   show_tool_calls: true

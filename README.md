@@ -1,10 +1,16 @@
+<p align="center">
+  <img src="docs/images/synteles_logo.png" alt="Synteles Logo" width="360"/>
+</p>
+
 # Synteles Agentlet
 
-**Agentlet** is a lightweight harness for building composable AI workers with tools, customization and traceable execution.
+**Synteles Agentlet** is a lightweight harness for building composable AI workers with tools, customization and traceable execution.
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status: Alpha](https://img.shields.io/badge/status-alpha-red.svg)](CHANGELOG.md)
+[![Build](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml)
+[![Latest Release](https://img.shields.io/github/v/release/Synteles/agentlet)](https://github.com/Synteles/agentlet/releases/latest)
 
 ⚠️ **Early Development**: Synteles Agentlet is pre-v1.0. APIs and configurations may change. See [Known Limitations](#known-limitations).
 
@@ -12,24 +18,19 @@
 
 ## Overview
 
-Synteles Agentlet is a Python runtime for autonomous AI agents built on the Strands Agent Framework.
+Synteles Agentlet is an AI agent runtime that works standalone or as the execution layer within the Synteles platform:
 
-- **Ephemeral execution** — clean spawn → execute → terminate lifecycle
-- **Multi-provider LLM** — Anthropic, AWS Bedrock, OpenAI, Azure, and more via LiteLLM
-- **MCP tools** — integrate external tools via stdio, HTTP, and SSE transports
+- **Ephemeral execution** — spawn > execute > terminate lifecycle
+- **Multi-provider LLM** — Anthropic, AWS Bedrock, OpenAI, Azure, Ollama and 100+ more via LiteLLM
+- **MCP support** — integrate external tools via stdio, HTTP, and SSE transports
+- **Tools** — shell, file editor, HTTP requests, Python REPL, web search, calculator, current time, and more — ready to use by name with no extra setup
 - **Multiagency** — orchestrator/sub-agentlet pipelines and peer-to-peer swarm patterns
-- **Declarative config** — YAML/JSON with Pydantic validation and JSON Schema
+- **Declarative config** — YAML DSL/JSON with Pydantic validation and JSON Schema
 - **Production observability** — 3-layer logging, OpenTelemetry traces/metrics, secret sanitization
+- **Multimodal input** — pass images (local files, HTTP URLs, base64) to vision-capable models via `--image`
+- **Timeouts and retries** — multi-level execution timeouts and declarative exponential backoff retry with per-error-class targeting, configurable backoff factor, initial interval, and interval cap
 
 ## Installation
-
-### From GitHub Release
-
-Download the latest wheel from the [Releases page](https://github.com/Synteles/agentlet/releases) and install it:
-
-```bash
-pip install agentlet_core-<version>-py3-none-any.whl
-```
 
 ### With uv (recommended for development)
 
@@ -50,6 +51,14 @@ docker run -it --rm \
   agentlet-core --agentlet generic-assistant --prompt "Hello"
 ```
 
+### From GitHub Release
+
+Download the latest wheel from the [Releases page](https://github.com/Synteles/agentlet/releases) and install it:
+
+```bash
+pip install agentlet_core-<version>-py3-none-any.whl
+```
+
 ### From source
 
 ```bash
@@ -58,7 +67,7 @@ cd agentlet
 pip install -e .
 ```
 
-See [Installation Guide](docs/getting-started/installation.md) for more options and troubleshooting.
+See [Installation Guide](docs/tutorials/installation.md) for more options and troubleshooting.
 
 ## Quick Start
 
@@ -89,9 +98,7 @@ tools:
 
 ```bash
 agentlet-core --agentlet my-assistant.yaml --prompt "List Python files"
-```
 
-```bash
 # With OpenTelemetry
 agentlet-core --agentlet my-assistant.yaml --prompt "Task" \
   --otel-enabled --otlp-endpoint "http://localhost:4318"
@@ -108,9 +115,8 @@ The `examples/` directory contains pre-built agentlets demonstrating various fea
 
 - **simple-assistant.yaml** — minimal starter example
 - **generic-assistant.yaml** — production-ready general-purpose assistant
-- **data-processor.yaml** — batch data processing
+- **generic-assistant.minified.yaml** — compact single-file version of generic-assistant
 - **web-researcher.yaml** — web search and summarization
-- **telegram-assistant.yaml** — Telegram bot integration
 - **multi-agent-example.yaml** — orchestrator with specialist sub-agents
 - **swarm-expert-panel.yaml** — peer-to-peer multi-agent collaboration
 - **swarm-dynamic.yaml** — dynamic team provisioning via LLM
@@ -132,6 +138,7 @@ The `templates/` directory contains starter templates:
 - **agentlet-schema.json** — JSON Schema for IDE validation and autocompletion
 
 Copy a template and customize it for your use case. Use the schema in your IDE to enable autocomplete:
+
 ```json
 {
   "$schema": "templates/agentlet-schema.json"
@@ -140,33 +147,26 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 
 ## Documentation
 
-**[Complete Documentation](docs/README.md)**
+### Tutorials
+- [Installation](docs/tutorials/installation.md)
+- [Quick Start](docs/tutorials/quick-start.md)
+- [Introduction](docs/tutorials/introduction.md)
 
-### Getting Started
-- [Installation](docs/getting-started/installation.md)
-- [Quick Start](docs/getting-started/quick-start.md)
-- [Core Concepts](docs/getting-started/core-concepts.md)
-
-### User Guide
-- [Configuration Reference](docs/user-guide/configuration.md)
-- [Running Agentlets](docs/user-guide/running-agentlets.md)
-- [MCP Tool Integration](docs/user-guide/mcp-integration.md)
-- [Swarm Pattern (Multi-Agent)](docs/user-guide/swarm.md)
+### Reference
+- [Configuration Reference](docs/reference/configuration.md)
+- [Running Agentlets](docs/reference/running-agentlets.md)
+- [MCP Tool Integration](docs/reference/mcp-integration.md)
+- [Multi-Agent Systems](docs/reference/multi-agent.md)
+- [Swarm Pattern](docs/reference/swarm.md)
+- [Logging](docs/reference/logging.md)
+- [OpenTelemetry & Tracing](docs/reference/telemetry.md)
+- [Debugging](docs/reference/debugging.md)
 
 ### Architecture & Design
 - [Architecture Overview](docs/architecture/overview.md)
 - [Agent Lifecycle](docs/architecture/agent-lifecycle.md)
+- [Configuration System](docs/architecture/configuration-system.md)
 - [Tool Management](docs/architecture/tool-management.md)
-
-### Observability
-- [Logging](docs/observability/logging.md)
-- [OpenTelemetry & Tracing](docs/observability/telemetry.md)
-- [Monitoring](docs/observability/monitoring.md)
-
-### Operations & Development
-- [Deployment Guide](docs/operations/deployment.md)
-- [Development Setup](docs/development/setup.md)
-- [Testing](docs/development/testing.md)
 
 ## Development
 
@@ -177,64 +177,50 @@ uv sync --group dev
 make check   # lint + typecheck + security + tests
 ```
 
-## Deployment
+Individual targets: `make lint`, `make typecheck`, `make security`, `make test`, `make format`.
+
+For local development with Docker Compose:
 
 ```bash
-docker pull synteles/agentlet-core:latest
-
-docker run -it --rm \
-  -e ANTHROPIC_API_KEY="your-key" \
-  synteles/agentlet-core:latest \
-  agentlet-core --agentlet generic-assistant --prompt "Hello"
+docker compose up
 ```
-
-See [Deployment Guide](docs/operations/deployment.md) for Kubernetes and production patterns.
-
-## License
-
-Synteles Agentlet is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
-
-## Code of Conduct
-
-This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
-
-## Security
-
-For security vulnerabilities, please **do not** open a public GitHub issue. Instead, see [SECURITY.md](SECURITY.md) for responsible disclosure guidelines.
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+Contributions are welcome. Good first contribution areas:
 
-- Ways to contribute
-- Development setup
-- Pull request guidelines
-- Testing and quality standards
-- Security guidelines
-- Responsible AI-assisted coding policy
+- Bug reports and reproducible issues
+- Security hardening
+- Documentation improvements
+- Tests
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [GOVERNANCE.md](GOVERNANCE.md) before contributing. Synteles uses the Developer Certificate of Origin — contributions must be signed off.
+
+AI-assisted coding is allowed, but contributors remain responsible for the code they submit. By contributing, you confirm that you have reviewed, tested, and have the right to submit your contribution under the project license.
 
 ## Known Limitations
 
 - Pre-v1.0 software: APIs and configurations may change
 - Security support is best-effort until stable release
-- Production deployment requires manual review and hardening
-- Observability and error handling are prioritized, but log outputs are still in early iteration
 
-## Support
+## Security
 
-- **Issues**: [GitHub Issues](https://github.com/Synteles/agentlet/issues)
-- **Documentation**: [Complete Docs](docs/README.md)
-- **Security Issues**: [SECURITY.md](SECURITY.md)
+Please do not report security vulnerabilities through public GitHub issues. See [SECURITY.md](SECURITY.md) for responsible disclosure guidelines and reporting instructions.
+
+## License
+
+Synteles Agentlet is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
+
+The Synteles name, logo, visual identity, and related brand assets are not covered by the Apache License. See [TRADEMARKS.md](TRADEMARKS.md).
+
+## Contact
+
+- **Issues & Discussions**: [GitHub Issues](https://github.com/Synteles/agentlet/issues) · [GitHub Discussions](https://github.com/Synteles/agentlet/discussions)
 - **Docker Hub**: [synteles/agentlet-core](https://hub.docker.com/r/synteles/agentlet-core)
-
-## Maintainer
-
-Synteles Agentlet is maintained by [Emin Askerov](https://github.com/emaskerov) as part of the Synteles project.
-
-For questions or feedback, reach out via:
-- **Email**: hello@synteles.io
-- **GitHub Issues**: [Create an issue](https://github.com/Synteles/agentlet/issues)
-- **GitHub Discussions**: [Start a discussion](https://github.com/Synteles/agentlet/discussions)
+- **General**: hello@synteles.io
+- **Security**: security@synteles.io
+- **Legal / trademark**: legal@synteles.io
+- **Maintainer**: [Emin Askerov](https://github.com/emaskerov)
 
 ---
 

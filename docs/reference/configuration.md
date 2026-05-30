@@ -31,12 +31,12 @@ observability:         # Telemetry configuration (optional)
 ```yaml
 agentlet:
   name: "my-assistant"     # Required: Identifier
-  version: "1.0.0"         # Required: Semantic version
+  version: "1.0.0"         # Optional: Semantic version (default: "1.0.0")
 ```
 
 **Fields:**
 - `name` (string, required): Agentlet identifier
-- `version` (string, required): Semantic version (e.g., "1.0.0")
+- `version` (string, optional): Semantic version (default: `"1.0.0"`)
 
 ## Prompt
 
@@ -137,11 +137,12 @@ retry:
   initial_retry_interval: 30.0        # Initial wait time (seconds)
   backoff_factor: 2.0                 # Exponential backoff multiplier
   max_retry_interval: 300.0           # Maximum wait time (seconds)
-  retry_error_types:                  # Error types to retry
+  retry_on_errors:                    # Error types to retry
     - "RateLimitError"
     - "EventLoopException"
     - "APIConnectionError"
     - "APITimeoutError"
+    - "litellm.RateLimitError"
 ```
 
 **Default behavior:**
@@ -272,8 +273,9 @@ tool_filters:
 ```
 
 **Validation:**
-- Cannot specify both `allowed` and `rejected`
-- Must specify at least one if `tool_filters` is present
+- Only `allowed` and `rejected` are valid keys — any other key is a validation error
+- Both `allowed` and `rejected` may be specified together (allow-list takes precedence; rejected acts as an additional exclusion within the allowed set)
+- `tool_filters` can be omitted entirely (all tools are loaded)
 
 ### Tool Name Prefixing
 
@@ -325,6 +327,14 @@ sub_agentlets:
 | `model` | ModelConfig | — | Model override. If absent, inherits the orchestrator's model. |
 | `tools` | list[string] | — | Strands default tools (same values as top-level `tools`). |
 | `mcp_tools` | list[MCPToolConfig] | — | MCP tools (same schema as top-level `mcp_tools`). |
+| `output` | OutputConfig | — | Display options for the sub-agentlet's execution. All three fields default to `false` (silent). |
+
+**Sub-agentlet `output` fields** (all default to `false`):
+- `show_messages` — display the sub-agentlet's assistant messages inline
+- `show_reasoning` — display the sub-agentlet's reasoning blocks inline
+- `show_tool_calls` — display the sub-agentlet's tool calls inline
+
+By default sub-agentlets run silently; the orchestrator's own output is displayed instead. Set any of the above to `true` to make a sub-agentlet's internal execution visible.
 
 **How it works at runtime:**
 
@@ -346,6 +356,44 @@ sub_agentlets:
 - Nested sub-agentlets (a sub-agentlet with its own `sub_agentlets`) are not supported.
 
 **See:** [Multi-Agent Guide](multi-agent.md) for a full walkthrough with example.
+
+## Swarm (Peer-to-Peer Multi-Agent)
+
+Declare a declarative swarm of peer agents. **Cannot be combined with `sub_agentlets`** — they are mutually exclusive patterns.
+
+```yaml
+swarm:
+  entry_point: solutions_architect   # Optional: first agent to receive the prompt
+  max_handoffs: 20                   # Default: 20
+  max_iterations: 20                 # Default: 20
+  execution_timeout: 900.0           # Default: 900 s (total swarm wall-clock)
+  node_timeout: 300.0                # Default: 300 s (per-agent turn)
+  repetitive_handoff_detection_window: 0    # Default: 0 (disabled)
+  repetitive_handoff_min_unique_agents: 0   # Default: 0 (disabled)
+  participants:
+    - name: solutions_architect       # Required: valid Python identifier
+      count: 2                        # Default: 1
+      description: "..."              # Required: shown to peer agents
+      system_prompt: "..."            # Required
+      model:                          # Optional: overrides top-level model
+        provider: bedrock
+        model_id: claude-haiku-4-5
+      tools: [shell]                  # Optional
+      mcp_tools: []                   # Optional
+```
+
+**Key fields:**
+- `participants` (list, required): At least one participant type
+- `entry_point` (string, optional): Base name of the participant that receives the initial prompt; defaults to the first participant
+- `max_handoffs` / `max_iterations`: Safety limits; 0 = unlimited
+- `repetitive_handoff_detection_window`: Set > 0 to enable loop detection (0 = disabled)
+- `count`: Expand a participant type into `count` instances named `{name}_1`, `{name}_2`, etc.
+
+**Swarm-specific runtime behaviour:**
+- Top-level `mcp_tools` are **ignored** in swarm mode — declare MCP tools per participant under `swarm.participants[*].mcp_tools`
+- Top-level `tools` are applied to the **entry-point agent only**; declare tools per participant for other agents
+
+**See:** [Swarm Pattern Guide](swarm.md) for complete examples including dynamic and combined modes.
 
 ## Resource Limits
 
@@ -370,11 +418,11 @@ resource_limits:
 
 ```yaml
 output:
-  format: "markdown"           # Output format (default: markdown)
-  streaming: true              # Stream output (default: true)
-  show_reasoning: true         # Show reasoning blocks (default: true)
-  show_tool_calls: true        # Show tool calls (default: true)
-  show_turn_boundaries: true   # Show turn indicators (default: true)
+  format: "markdown"             # Output format (default: markdown)
+  show_messages: true            # Show assistant messages (default: true)
+  show_reasoning: true           # Show reasoning blocks (default: true)
+  show_tool_calls: true          # Show tool calls (default: true)
+  show_turn_boundaries: false    # Show turn indicators (default: false)
 ```
 
 **Fields:**
@@ -382,10 +430,10 @@ output:
   - `"markdown"` (default): Rich markdown rendering
   - `"json"`: JSON output
   - `"text"`: Plain text
-- `streaming` (bool, optional): Enable streaming output (default: true)
-- `show_reasoning` (bool, optional): Display reasoning blocks for extended thinking (default: true)
-- `show_tool_calls` (bool, optional): Display tool calls and results (default: true)
-- `show_turn_boundaries` (bool, optional): Show turn boundary indicators (default: true)
+- `show_messages` (bool, optional): Display complete assistant messages per turn (default: `true`)
+- `show_reasoning` (bool, optional): Display reasoning blocks for extended thinking (default: `true`)
+- `show_tool_calls` (bool, optional): Display tool calls and results (default: `true`)
+- `show_turn_boundaries` (bool, optional): Show turn boundary indicators for multi-turn conversations (default: `false`)
 
 ## Observability Configuration
 
@@ -455,21 +503,47 @@ mcp_tools:
 
 Agentlet-core searches for configs in this order:
 
-1. **Explicit path**: `--agentlet /path/to/config.yaml`
-2. **Current directory**: `./my-agentlet.yaml`
-3. **Synteles home**: `~/.synteles/agentlets/my-agentlet.yaml`
-4. **Local .synteles**: `./.synteles/agentlets/my-agentlet.yaml`
+1. **Explicit path**: `--agentlet /path/to/config.yaml` — loaded directly
+2. **Name** (no `/` or `\` in the value): searched as `{name}.yaml` / `{name}.yml` in:
+   - Current working directory (`CWD/`)
+   - `~/.synteles/agentlets/`
+   - `./.synteles/agentlets/`
+3. **Auto-discovery** (no `--agentlet`): first `*.yaml`, `*.yml`, or `*.json` found in the same search paths
+
+> **Note:** Name resolution (e.g. `--agentlet simple-assistant`) only matches `.yaml` and `.yml` files. JSON configs must be specified with an explicit path.
 
 ### Name Resolution
 
 ```bash
-# Search for "simple-assistant.yaml" in search paths
+# Search for "simple-assistant.yaml" or "simple-assistant.yml" in search paths
 agentlet-core --agentlet simple-assistant --prompt "Hello"
 
-# Use explicit path
+# Use explicit path (YAML or JSON)
 agentlet-core --agentlet /path/to/config.yaml --prompt "Hello"
-
+agentlet-core --agentlet /path/to/config.json --prompt "Hello"
 ```
+
+### Environment Variables
+
+**Required (provider-specific):**
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+OPENAI_API_KEY=sk-...
+AWS_ACCESS_KEY_ID=AKIA...
+AWS_SECRET_ACCESS_KEY=...
+AZURE_API_KEY=...
+```
+
+**Optional:**
+```bash
+SYNTELES_EXEC_ID=<uuid4>    # Set execution ID for trace correlation (auto-generated if absent)
+LITELLM_DEBUG=true          # Enable LiteLLM debug output
+BYPASS_TOOL_CONSENT=true    # Auto-set by agentlet-core; skips interactive tool consent
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+```
+
+`SYNTELES_EXEC_ID` is useful in CI/CD or orchestration systems where you want to correlate agentlet traces back to a parent pipeline run. Must be a valid UUID v4; if invalid, a new ID is generated and a warning is logged.
+
 
 ## CLI Override
 
@@ -547,10 +621,10 @@ resource_limits:
 
 output:
   format: "markdown"
-  streaming: true
+  show_messages: true
   show_reasoning: true
   show_tool_calls: true
-  show_turn_boundaries: true
+  show_turn_boundaries: false
 
 observability:
   otel:
@@ -571,7 +645,7 @@ Configuration is validated using Pydantic schemas:
 - Missing required fields (`agentlet.name`, `model.provider`)
 - Invalid enum values (`output.format`, `observability.otel.sampler`)
 - Invalid types (string instead of integer, etc.)
-- Conflicting tool filters (`allowed` and `rejected` both specified)
+- Invalid tool filter keys (only `allowed` and `rejected` are accepted)
 - Invalid model parameters
 
 **Error messages include:**

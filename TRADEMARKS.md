@@ -1,6 +1,6 @@
 # Trademark and Brand Guidelines
 
-The Synteles source code is licensed under the Apache License, Version 2.0, unless otherwise stated.
+The Synteles Agentlet source code is licensed under the Apache License, Version 2.0, unless otherwise stated.
 
 The Synteles name, logo, visual identity, and related brand assets are not licensed under the Apache License, Version 2.0.
 

@@ -6,14 +6,38 @@ This document provides a high-level view of agentlet-core's architecture, compon
 
 Agentlet-core is a Python runtime for autonomous AI agents built on the Strands Agent Framework. It implements an ephemeral execution model where agents are spawned, execute tasks, and terminate cleanly with no persistent state.
 
-**Key Characteristics:**
-- Ephemeral lifecycle (spawn → execute → terminate)
-- Multi-provider LLM support via LiteLLM
-- MCP (Model Context Protocol) tools integration
-- Multiagency via inline sub-agentlets ("agent as a tool" pattern)
-- Rich console output with observability
-- Declarative YAML/JSON configuration
-- OpenTelemetry-ready telemetry
+## Key Characteristics:
+
+**1. Ephemeral Execution**
+- No persistent state between runs
+- Clean spawn → execute → terminate lifecycle
+- Fresh context for each execution
+
+**2. Declarative Configuration**
+- YAML/JSON configuration files
+- Pydantic validation
+- Environment variable expansion
+
+**3. Multi-Provider LLM Support**
+- Works with any LiteLLM-compatible provider
+- Unified model string format: `provider/model_id`
+- Cost tracking and token usage
+
+**4. Rich Tooling**
+- Default Strands tools (bash, file_editor, computer)
+- MCP protocol tools (stdio, HTTP, SSE)
+- Tool filtering and prefixing
+
+**5. Multiagency**
+- Inline sub-agentlets defined in YAML, each callable as a tool
+- Orchestrator delegates specialised tasks; sub-agents return results as strings
+- Per-sub-agentlet statistics: execution time, token usage, cost
+- Sub-agent OTel spans auto-nested under the orchestrator's trace
+
+**6. Production-Ready Observability**
+- 3-layer logging system
+- OpenTelemetry traces and metrics
+- Automatic secret sanitization
 
 ## Layered Architecture
 
@@ -33,7 +57,6 @@ The system follows a clean layered architecture with clear separation of concern
 │  - YAML/JSON loading with search paths                          │
 │  - Pydantic schema validation                                   │
 │  - Environment variable expansion                               │
-│  - Remote configuration loading (Synteles Platform API)         │
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
@@ -84,14 +107,12 @@ The system follows a clean layered architecture with clear separation of concern
 
 - `loader.py`: Configuration discovery and loading
   - Multi-location search (CWD, ~/.synteles, ./.synteles)
-  - Remote loading from Synteles Platform API
   - Environment variable expansion (`${VAR}`, `$VAR`)
   - YAML/JSON format support
 
 **Key Patterns:**
 - Pydantic validation ensures type safety and constraint enforcement
 - Environment variable substitution happens before parsing
-- Remote configurations use HTTP with API key authentication
 
 ### Agent Layer (`agents/base.py`)
 **Purpose:** Core agentlet lifecycle and execution
@@ -293,7 +314,6 @@ manager.exit_contexts()        # Clean up
 - Pydantic validation ensures correctness
 - Environment variable expansion for secrets
 - CLI override for runtime flexibility
-- Remote configuration support
 
 ### 3. Clean Resource Management
 **Explicit lifecycle with guaranteed cleanup**
@@ -344,10 +364,9 @@ CLI Arguments
     │
     ├──> Load .env file (if specified)
     │
-    ├──> Load config (file path, name, or URL)
+    ├──> Load config (file path or agentlet name)
     │    │
-    │    ├──> Local file: Search paths (CWD, ~/.synteles, ./.synteles)
-    │    └──> Remote URL: Synteles Platform API (with auth)
+    │    └──> Search paths: CWD, ~/.synteles/agentlets, ./.synteles/agentlets
     │
     ├──> Expand environment variables in config
     │
@@ -437,7 +456,7 @@ agent.stream_async(prompt)
 │                      Configuration                                │
 │  ┌────────────┐    ┌──────────────┐    ┌──────────────┐         │
 │  │ Loader     │───▶│ Pydantic     │───▶│ AgentletConf │         │
-│  │ (YAML/URL) │    │ Validation   │    │              │         │
+│  │ (YAML/JSON)│    │ Validation   │    │              │         │
 │  └────────────┘    └──────────────┘    └──────┬───────┘         │
 └────────────────────────────────────────────────┼─────────────────┘
                                                   │
@@ -515,7 +534,6 @@ agent.stream_async(prompt)
 ### Lazy Loading
 - Tools loaded on-demand from `strands_tools.*`
 - MCP clients initialized only when configured
-- Remote configs cached by aiohttp
 
 ### Resource Management
 - Temporary directories cleaned up automatically
@@ -539,9 +557,8 @@ agent.stream_async(prompt)
 
 ### Input Validation
 - Pydantic schema validation
-- URL validation for remote configs
 - File path validation
-- Environment variable expansion with bounds
+- Environment variable expansion
 
 ### Subprocess Safety
 - stdio MCP servers isolated in subprocesses

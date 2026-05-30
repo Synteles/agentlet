@@ -151,16 +151,19 @@ git commit -s -m "Add document processing workflow example"
 
 ## Branch Naming
 
-Use short, descriptive branch names.
+Use short, descriptive branch names with a consistent prefix.
 
-Examples:
-
-```text
-feature/document-processing-example
-fix/workflow-retry-handling
-docs/quickstart-update
-test/connector-runtime
-```
+| Prefix | Use for | Example |
+|---|---|---|
+| `feature/` | New features or capabilities | `feature/document-processing-example` |
+| `fix/` | Bug fixes | `fix/workflow-retry-handling` |
+| `docs/` | Documentation changes only | `docs/quickstart-update` |
+| `test/` | Adding or improving tests | `test/connector-runtime` |
+| `refactor/` | Code restructuring without behavior change | `refactor/scheduler-error-handling` |
+| `chore/` | Maintenance — config, tooling, CI, scripts | `chore/update-docker-compose-healthchecks` |
+| `bump/` | Dependency or version bumps | `bump/litellm-1.50` |
+| `security/` | Security fixes or hardening | `security/sanitize-execution-logs` |
+| `perf/` | Performance improvements | `perf/agentlet-startup-time` |
 
 ## Commit Messages
 
@@ -288,7 +291,7 @@ If you add a feature, please consider whether it needs updates to:
 - `docs/getting-started/` (quickstart, installation)
 - `docs/user-guide/` (configuration, running agentlets, MCP integration)
 - `docs/architecture/` (agent lifecycle, tool management)
-- `docs/observability/` (logging, telemetry, monitoring)
+- `docs/reference/` (logging, telemetry, monitoring)
 - Example agentlets in `examples/agentlets/`
 
 ## Testing Guidelines
@@ -366,7 +369,7 @@ See [SECURITY.md](SECURITY.md).
 
 ## Responsible AI-Assisted Coding
 
-AI-assisted coding tools are allowed when contributing to Synteles.
+AI-assisted coding tools are allowed when contributing to Synteles Agentlet.
 
 Examples include code completion tools, chat-based coding assistants, AI-generated tests, AI-assisted documentation, and refactoring suggestions.
 
@@ -420,7 +423,7 @@ Maintainers may ask follow-up questions about AI-assisted contributions, especia
 
 ## Developer Certificate of Origin
 
-Synteles uses the Developer Certificate of Origin, or DCO, for contributions.
+Synteles Agentlet uses the Developer Certificate of Origin, or DCO, for contributions.
 
 By contributing to this project, you certify that you have the right to submit your contribution under the Apache License, Version 2.0.
 
@@ -477,11 +480,11 @@ See [SECURITY.md](SECURITY.md).
 
 Project governance is described in [GOVERNANCE.md](GOVERNANCE.md).
 
-Synteles is currently a founder-led open-source project. As the community grows, governance may evolve.
+Synteles Agentlet is currently a founder-led open-source project. As the community grows, governance may evolve.
 
 ## License
 
-By contributing to Synteles, you agree that your contributions will be licensed under the Apache License, Version 2.0, unless explicitly stated otherwise.
+By contributing to Synteles Agentlet, you agree that your contributions will be licensed under the Apache License, Version 2.0, unless explicitly stated otherwise.
 
 See [LICENSE](LICENSE).
 

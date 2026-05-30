@@ -13,6 +13,13 @@ This enables two powerful use cases:
 
 Both modes are configured entirely in YAML. Existing single-agent and sub-agentlets configs are unaffected.
 
+> **Constraint:** `swarm` and `sub_agentlets` are mutually exclusive. A config with both will fail validation. Use swarm for peer-to-peer coordination; use sub_agentlets for the orchestrator-as-tool pattern.
+
+**Runtime behaviour (swarm mode):**
+- Top-level `mcp_tools` are **ignored** — declare MCP tools per participant under `swarm.participants[*].mcp_tools`. A warning is logged if top-level MCP tools are present.
+- Top-level `tools` (built-in Strands tools) are applied to the **entry-point agent only**. Declare tools under each participant for other agents.
+- `repetitive_handoff_detection_window: 0` (the default) means loop detection is **disabled**. Set to a positive integer to enable it.
+
 ## Three Modes
 
 | Mode | `swarm` section | `"swarm"` in `tools` | Description |

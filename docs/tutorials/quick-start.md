@@ -52,7 +52,6 @@ tools:
   - "bash"
 
 output:
-  streaming: true
   show_tool_calls: true
 ```
 
@@ -140,9 +139,6 @@ mcp_tools:
     env:
       ALLOWED_DIRECTORIES: "${WORK_DIR}"
     prefix: "fs"
-
-output:
-  streaming: true
 ```
 
 Run it:
@@ -241,9 +237,9 @@ asyncio.run(main())
 
 ## Next Steps
 
-- **[Core Concepts](core-concepts.md)** - Learn about agentlet architecture
-- **[Configuration Guide](../user-guide/configuration.md)** - Full config reference
-- **[MCP Integration](../user-guide/mcp-integration.md)** - Advanced MCP usage
+- **[Introduction](introduction.md)** - Learn about agentlet architecture
+- **[Configuration Guide](../reference/configuration.md)** - Full config reference
+- **[MCP Integration](../reference/mcp-integration.md)** - Advanced MCP usage
 - **[Architecture Overview](../architecture/overview.md)** - System design deep dive
 
 ## Troubleshooting

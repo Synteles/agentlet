@@ -43,7 +43,7 @@ We will make a best-effort attempt to:
 - Coordinate disclosure where appropriate
 - Credit the reporter if desired and appropriate
 
-Because Synteles is currently maintained by a small team, response times may vary.
+Because Synteles Agentlet is currently maintained by a small team, response times may vary.
 
 ## Responsible Disclosure
 
