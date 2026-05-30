@@ -139,10 +139,10 @@ resource_limits:
 # Output configuration
 output:
   format: "markdown"  # or "json", "text"
-  streaming: true
+  show_messages: true
   show_reasoning: true
   show_tool_calls: true
-  show_turn_boundaries: true
+  show_turn_boundaries: false
 
 # Observability
 observability:
@@ -338,7 +338,7 @@ model:
     initial_retry_interval: 30.0  # seconds
     backoff_factor: 2.0
     max_retry_interval: 300.0
-    retry_error_types:
+    retry_on_errors:
       - "RateLimitError"
       - "APIConnectionError"
       - "APITimeoutError"
@@ -465,11 +465,11 @@ sub_agentlets:
 - **Statistics** — execution time, tokens, and cost logged per sub-agentlet after each run
 - **Isolated** — sub-agentlets have no `ExecutionContext`; the orchestrator owns lifecycle tracking
 
-See [Multi-Agent Guide](../user-guide/multi-agent.md) for a complete walkthrough.
+See [Multi-Agent Guide](../reference/multi-agent.md) for a complete walkthrough.
 
 ## Next Steps
 
-- **[Configuration Guide](../user-guide/configuration.md)** - Full config reference
-- **[Multi-Agent Systems](../user-guide/multi-agent.md)** - Orchestrating sub-agentlets
+- **[Configuration Guide](../reference/configuration.md)** - Full config reference
+- **[Multi-Agent Systems](../reference/multi-agent.md)** - Orchestrating sub-agentlets
 - **[Architecture Overview](../architecture/overview.md)** - System design
 - **[Agent Lifecycle](../architecture/agent-lifecycle.md)** - Lifecycle deep dive

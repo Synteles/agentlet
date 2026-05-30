@@ -20,6 +20,7 @@ Synteles Agentlet is a Python runtime for autonomous AI agents built on the Stra
 - **Multiagency** — orchestrator/sub-agentlet pipelines and peer-to-peer swarm patterns
 - **Declarative config** — YAML/JSON with Pydantic validation and JSON Schema
 - **Production observability** — 3-layer logging, OpenTelemetry traces/metrics, secret sanitization
+- **Multimodal input** — pass images (local files, HTTP URLs, base64) to vision-capable models via `--image`
 
 ## Installation
 
@@ -58,7 +59,7 @@ cd agentlet
 pip install -e .
 ```
 
-See [Installation Guide](docs/getting-started/installation.md) for more options and troubleshooting.
+See [Installation Guide](docs/tutorials/installation.md) for more options and troubleshooting.
 
 ## Quick Start
 
@@ -108,6 +109,7 @@ The `examples/` directory contains pre-built agentlets demonstrating various fea
 
 - **simple-assistant.yaml** — minimal starter example
 - **generic-assistant.yaml** — production-ready general-purpose assistant
+- **generic-assistant.minified.yaml** — compact single-file version of generic-assistant
 - **data-processor.yaml** — batch data processing
 - **web-researcher.yaml** — web search and summarization
 - **telegram-assistant.yaml** — Telegram bot integration
@@ -142,20 +144,25 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 
 **[Complete Documentation](docs/README.md)**
 
-### Getting Started
-- [Installation](docs/getting-started/installation.md)
-- [Quick Start](docs/getting-started/quick-start.md)
-- [Core Concepts](docs/getting-started/core-concepts.md)
+### Tutorials
+- [Installation](docs/tutorials/installation.md)
+- [Quick Start](docs/tutorials/quick-start.md)
+- [Introduction](docs/tutorials/introduction.md)
 
-### User Guide
-- [Configuration Reference](docs/user-guide/configuration.md)
-- [Running Agentlets](docs/user-guide/running-agentlets.md)
-- [MCP Tool Integration](docs/user-guide/mcp-integration.md)
-- [Swarm Pattern (Multi-Agent)](docs/user-guide/swarm.md)
+### Reference
+- [Configuration Reference](docs/reference/configuration.md)
+- [Running Agentlets](docs/reference/running-agentlets.md)
+- [MCP Tool Integration](docs/reference/mcp-integration.md)
+- [Multi-Agent Systems](docs/reference/multi-agent.md)
+- [Swarm Pattern](docs/reference/swarm.md)
+- [Deployment Guide](docs/reference/deployment.md)
+- [Versioning](docs/reference/versioning.md)
+- [CI/CD Automation](docs/reference/ci-cd.md)
 
 ### Architecture & Design
 - [Architecture Overview](docs/architecture/overview.md)
 - [Agent Lifecycle](docs/architecture/agent-lifecycle.md)
+- [Configuration System](docs/architecture/configuration-system.md)
 - [Tool Management](docs/architecture/tool-management.md)
 
 ### Observability
@@ -163,10 +170,10 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 - [OpenTelemetry & Tracing](docs/observability/telemetry.md)
 - [Monitoring](docs/observability/monitoring.md)
 
-### Operations & Development
-- [Deployment Guide](docs/operations/deployment.md)
+### Development
 - [Development Setup](docs/development/setup.md)
 - [Testing](docs/development/testing.md)
+- [Debugging](docs/development/debugging.md)
 
 ## Development
 
@@ -175,6 +182,14 @@ git clone https://github.com/Synteles/agentlet.git
 cd agentlet
 uv sync --group dev
 make check   # lint + typecheck + security + tests
+```
+
+Individual targets: `make lint`, `make typecheck`, `make security`, `make test`, `make format`.
+
+For local development with Docker Compose:
+
+```bash
+docker compose up
 ```
 
 ## Deployment
@@ -188,7 +203,7 @@ docker run -it --rm \
   agentlet-core --agentlet generic-assistant --prompt "Hello"
 ```
 
-See [Deployment Guide](docs/operations/deployment.md) for Kubernetes and production patterns.
+See [Deployment Guide](docs/reference/deployment.md) for Kubernetes and production patterns.
 
 ## License
 

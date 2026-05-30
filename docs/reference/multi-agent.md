@@ -297,6 +297,6 @@ uv run agentlet-core \
 ## Next Steps
 
 - **[Configuration Reference](configuration.md)** — Full `sub_agentlets` schema
-- **[Core Concepts](../getting-started/core-concepts.md)** — Multiagency overview
+- **[Core Concepts](../tutorials/introduction.md)** — Multiagency overview
 - **[Architecture Overview](../architecture/overview.md)** — How sub-agentlets fit the system design
 - **[Tool Management](../architecture/tool-management.md)** — How tools are loaded and managed

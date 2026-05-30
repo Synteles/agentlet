@@ -23,6 +23,5 @@ resource_limits:
 
 output:
   format: "text"
-  streaming: true
   show_reasoning: false
   show_tool_calls: false

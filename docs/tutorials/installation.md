@@ -185,5 +185,5 @@ pip install -e .
 ## Next Steps
 
 - [Quick Start Guide](quick-start.md) - Run your first agentlet
-- [Core Concepts](core-concepts.md) - Understand agentlet fundamentals
-- [Configuration Guide](../user-guide/configuration.md) - Configure your agentlet
+- [Introduction](introduction.md) - Understand agentlet fundamentals
+- [Configuration Guide](../reference/configuration.md) - Configure your agentlet

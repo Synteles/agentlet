@@ -27,13 +27,13 @@ agentlet-core [OPTIONS]
 
 #### --agentlet, -a
 
-Path to agentlet configuration file, agentlet name, or URL to remote agentlet.
+Path to agentlet configuration file or agentlet name.
 
 ```bash
-# Explicit file path
+# Explicit file path (YAML or JSON)
 agentlet-core --agentlet /path/to/config.yaml --prompt "Task"
 
-# Agentlet name (searches default locations)
+# Agentlet name — searches for {name}.yaml or {name}.yml in default locations
 agentlet-core --agentlet simple-assistant --prompt "Task"
 ```
 
@@ -42,7 +42,7 @@ agentlet-core --agentlet simple-assistant --prompt "Task"
 2. User Synteles directory (`~/.synteles/agentlets/`)
 3. Local Synteles directory (`./.synteles/agentlets/`)
 
-**Supported extensions**: `.yaml`, `.yml`, `.json`
+**Note:** Name resolution only matches `.yaml` and `.yml`. To use a JSON config, provide the explicit file path.
 
 #### --prompt, -p
 
@@ -293,9 +293,8 @@ Path to `.env` file for environment variables.
 agentlet-core --agentlet my-agent --env-file /path/to/.env --prompt "Task"
 
 # Default behavior (searches in order):
-# 1. ./.env (current directory)
-# 2. .env (project root)
-# 3. ~/.env (home directory)
+# 1. ./.env (current working directory)
+# 2. ~/synteles/.env (Synteles home directory)
 agentlet-core --agentlet my-agent --prompt "Task"
 ```
 
@@ -314,6 +313,30 @@ AWS_REGION=us-east-1
 CUSTOM_API_KEY=abc123
 ALLOWED_DIRECTORIES=/home/user/projects
 ```
+
+#### --image, -i
+
+Pass one or more images to the model alongside the prompt. Can be repeated.
+
+```bash
+# Local file
+agentlet-core --agentlet my-agent --prompt "Describe this diagram" \
+  --image /path/to/diagram.png
+
+# HTTP/HTTPS URL
+agentlet-core --agentlet my-agent --prompt "What's in this screenshot?" \
+  --image https://example.com/screenshot.png
+
+# Multiple images
+agentlet-core --agentlet my-agent --prompt "Compare these two designs" \
+  --image design-a.png --image design-b.png
+```
+
+**Supported formats:** JPEG, PNG, GIF, WebP
+
+**Supported sources:** Local file path, `http://` or `https://` URL, `data:image/...;base64,...` data URI
+
+**Requires** a vision-capable model (e.g., `claude-sonnet-4-6`, `gpt-4o`).
 
 ### Version
 
@@ -359,6 +382,13 @@ export AZURE_API_VERSION="2024-02-01"
 
 ### Optional Variables
 
+**Execution ID** (for trace correlation):
+```bash
+export SYNTELES_EXEC_ID="550e8400-e29b-41d4-a716-446655440000"  # Must be a valid UUID v4
+```
+
+Set this when running inside a CI/CD pipeline or orchestration system to tie the agentlet's traces back to a parent job ID. If absent or invalid, a new UUID v4 is generated automatically.
+
 **LiteLLM Debug**:
 ```bash
 export LITELLM_DEBUG="true"
@@ -381,9 +411,8 @@ Agentlet-core automatically loads environment variables from `.env` files.
 
 **Search order**:
 1. Explicit path via `--env-file`
-2. `./.env` (current directory)
-3. `.env` (project root)
-4. `~/.env` (home directory)
+2. `./.env` (current working directory)
+3. `~/synteles/.env` (Synteles home directory)
 
 **Example .env file**:
 ```bash
@@ -409,47 +438,6 @@ LITELLM_DEBUG=false
 agentlet-core --agentlet my-agent --debug --prompt "Task"
 # Output: ✓ Environment variables loaded from .env file
 ```
-
-## Execution Modes
-
-### Streaming Mode (Default)
-
-Output is streamed in real-time as the agent generates responses.
-
-```bash
-agentlet-core --agentlet my-agent --prompt "Explain AI"
-```
-
-**Behavior**:
-- Responses appear token-by-token
-- Tool calls shown as they occur
-- Reasoning blocks streamed live
-- Lower latency perception
-
-**Configuration**:
-```yaml
-output:
-  streaming: true  # default
-```
-
-### Non-Streaming Mode
-
-Output is buffered and displayed after completion.
-
-```bash
-agentlet-core --agentlet my-agent --prompt "Task"
-```
-
-**Configuration**:
-```yaml
-output:
-  streaming: false
-```
-
-**Behavior**:
-- Shows spinner during execution
-- Complete response displayed at once
-- Summary shown after execution
 
 ## Working with Prompts
 

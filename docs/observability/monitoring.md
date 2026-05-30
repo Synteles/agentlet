@@ -13,6 +13,8 @@ Effective monitoring of agentlet-core involves tracking:
 
 ## Key Metrics
 
+> **Note:** The metric names below (e.g. `agentlet.execution.duration_seconds`) are recommended conventions for custom instrumentation. Agentlet-core does not emit these metrics automatically — it exports traces via OTLP (see [Telemetry](telemetry.md)) and logs execution summaries (see [Logging](logging.md)). Use the `ExecutionContext` object in custom wrappers to publish metrics to your backend.
+
 ### Execution Metrics
 
 **Execution Time**:
@@ -316,18 +318,14 @@ resource_limits:
   # Maximum execution time (seconds)
   max_execution_time: 300  # 5 minutes
 
-  # Maximum total tokens (input + output)
-  max_tokens: 50000
-
-  # Maximum retries on failure
-  max_retries: 3
+  # Maximum total tokens (input + output) — passed as max_tokens to the model
+  max_tokens: 10000
 
   # Maximum tool calls per execution
   max_tool_calls: 20
-
-  # Maximum concurrent executions
-  max_concurrent_executions: 10
 ```
+
+> **Note:** `max_concurrent_executions` is not a built-in config field. Use OS-level process limits, container resource constraints, or a semaphore in your orchestration layer to cap concurrency.
 
 ### Memory Limits
 
@@ -356,14 +354,15 @@ resources:
 ### Rate Limiting
 
 **Provider Rate Limits**:
+
+`model.parameters` is a pass-through dict to LiteLLM — it does not define `rpm_limit` or `tpm_limit` fields. To control provider rate limiting, configure your LiteLLM proxy or use the retry/backoff settings on the `model.retry` block:
+
 ```yaml
-# Configure rate limiting to avoid provider throttling
 model:
-  parameters:
-    # Requests per minute
-    rpm_limit: 50
-    # Tokens per minute
-    tpm_limit: 100000
+  retry:
+    max_retries: 5
+    initial_retry_interval: 30.0  # back off when throttled
+    backoff_factor: 2.0
 ```
 
 **Application Rate Limiting**:
@@ -706,4 +705,4 @@ def check_user_budget(user_id: str, cost: float) -> bool:
 - [Logging](logging.md) - Production logging best practices
 - [Telemetry](telemetry.md) - OpenTelemetry integration
 - [Architecture: Execution Context](../architecture/agent-lifecycle.md) - Metrics collection
-- [User Guide: Configuration](../user-guide/configuration.md) - Resource limits configuration
+- [Reference: Configuration](../reference/configuration.md) - Resource limits configuration
