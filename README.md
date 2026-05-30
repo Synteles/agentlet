@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/synteles_logo.svg" alt="Synteles Logo" width="300"/>
+  <img src="docs/images/synteles_logo.png" alt="Synteles Logo" width="360"/>
 </p>
 
 # Synteles Agentlet
@@ -94,9 +94,7 @@ tools:
 
 ```bash
 agentlet-core --agentlet my-assistant.yaml --prompt "List Python files"
-```
 
-```bash
 # With OpenTelemetry
 agentlet-core --agentlet my-assistant.yaml --prompt "Task" \
   --otel-enabled --otlp-endpoint "http://localhost:4318"
@@ -136,6 +134,7 @@ The `templates/` directory contains starter templates:
 - **agentlet-schema.json** — JSON Schema for IDE validation and autocompletion
 
 Copy a template and customize it for your use case. Use the schema in your IDE to enable autocomplete:
+
 ```json
 {
   "$schema": "templates/agentlet-schema.json"
@@ -170,9 +169,6 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 - [OpenTelemetry & Tracing](docs/observability/telemetry.md)
 - [Monitoring](docs/observability/monitoring.md)
 
-### Development
-- [Debugging](docs/reference/debugging.md)
-
 ## Development
 
 ```bash
@@ -192,39 +188,22 @@ docker compose up
 
 ## Deployment
 
-```bash
-docker pull synteles/agentlet-core:latest
-
-docker run -it --rm \
-  -e ANTHROPIC_API_KEY="your-key" \
-  synteles/agentlet-core:latest \
-  agentlet-core --agentlet generic-assistant --prompt "Hello"
-```
-
-See [Deployment Guide](docs/reference/deployment.md) for Kubernetes and production patterns.
-
-## License
-
-Synteles Agentlet is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
-
-## Code of Conduct
-
-This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
-
-## Security
-
-For security vulnerabilities, please **do not** open a public GitHub issue. Instead, see [SECURITY.md](SECURITY.md) for responsible disclosure guidelines.
+See [Deployment Guide](docs/reference/deployment.md) for Docker, Kubernetes, and production patterns.
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
+Contributions are welcome. Good first contribution areas:
 
-- Ways to contribute
-- Development setup
-- Pull request guidelines
-- Testing and quality standards
-- Security guidelines
-- Responsible AI-assisted coding policy
+- Bug reports and reproducible issues
+- Kubernetes deployment support (Helm charts)
+- Governance, identity and access management capabilities
+- Security hardening
+- Documentation improvements
+- Tests
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [GOVERNANCE.md](GOVERNANCE.md) before contributing. Synteles uses the Developer Certificate of Origin — contributions must be signed off.
+
+AI-assisted coding is allowed, but contributors remain responsible for the code they submit. By contributing, you confirm that you have reviewed, tested, and have the right to submit your contribution under the project license.
 
 ## Known Limitations
 
@@ -233,21 +212,24 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - Production deployment requires manual review and hardening
 - Observability and error handling are prioritized, but log outputs are still in early iteration
 
-## Support
+## Security
 
-- **Issues**: [GitHub Issues](https://github.com/Synteles/agentlet/issues)
-- **Documentation**: [docs/](docs/)
-- **Security Issues**: [SECURITY.md](SECURITY.md)
+Please do not report security vulnerabilities through public GitHub issues. See [SECURITY.md](SECURITY.md) for responsible disclosure guidelines and reporting instructions.
+
+## License
+
+Synteles Agentlet is licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE).
+
+The Synteles name, logo, visual identity, and related brand assets are not covered by the Apache License. See [TRADEMARKS.md](TRADEMARKS.md).
+
+## Contact
+
+- **Issues & Discussions**: [GitHub Issues](https://github.com/Synteles/agentlet/issues) · [GitHub Discussions](https://github.com/Synteles/agentlet/discussions)
 - **Docker Hub**: [synteles/agentlet-core](https://hub.docker.com/r/synteles/agentlet-core)
-
-## Maintainer
-
-Synteles Agentlet is maintained by [Emin Askerov](https://github.com/emaskerov) as part of the Synteles project.
-
-For questions or feedback, reach out via:
-- **Email**: hello@synteles.io
-- **GitHub Issues**: [Create an issue](https://github.com/Synteles/agentlet/issues)
-- **GitHub Discussions**: [Start a discussion](https://github.com/Synteles/agentlet/discussions)
+- **General**: hello@synteles.io
+- **Security**: security@synteles.io
+- **Legal / trademark**: legal@synteles.io
+- **Maintainer**: [Emin Askerov](https://github.com/emaskerov)
 
 ---
 
