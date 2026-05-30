@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/synteles_logo.svg" alt="Synteles Logo" width="300"/>
+</p>
+
 # Synteles Agentlet
 
 **Agentlet** is a lightweight harness for building composable AI workers with tools, customization and traceable execution.
@@ -110,9 +114,7 @@ The `examples/` directory contains pre-built agentlets demonstrating various fea
 - **simple-assistant.yaml** — minimal starter example
 - **generic-assistant.yaml** — production-ready general-purpose assistant
 - **generic-assistant.minified.yaml** — compact single-file version of generic-assistant
-- **data-processor.yaml** — batch data processing
 - **web-researcher.yaml** — web search and summarization
-- **telegram-assistant.yaml** — Telegram bot integration
 - **multi-agent-example.yaml** — orchestrator with specialist sub-agents
 - **swarm-expert-panel.yaml** — peer-to-peer multi-agent collaboration
 - **swarm-dynamic.yaml** — dynamic team provisioning via LLM
@@ -142,8 +144,6 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 
 ## Documentation
 
-**[Complete Documentation](docs/README.md)**
-
 ### Tutorials
 - [Installation](docs/tutorials/installation.md)
 - [Quick Start](docs/tutorials/quick-start.md)
@@ -171,9 +171,7 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 - [Monitoring](docs/observability/monitoring.md)
 
 ### Development
-- [Development Setup](docs/development/setup.md)
-- [Testing](docs/development/testing.md)
-- [Debugging](docs/development/debugging.md)
+- [Debugging](docs/reference/debugging.md)
 
 ## Development
 
@@ -238,7 +236,7 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Synteles/agentlet/issues)
-- **Documentation**: [Complete Docs](docs/README.md)
+- **Documentation**: [docs/](docs/)
 - **Security Issues**: [SECURITY.md](SECURITY.md)
 - **Docker Hub**: [synteles/agentlet-core](https://hub.docker.com/r/synteles/agentlet-core)
 
