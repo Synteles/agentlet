@@ -1,6 +1,6 @@
 # Governance
 
-Synteles is currently maintained as a founder-led open-source project.
+Synteles Agentlet is currently maintained as a founder-led open-source project.
 
 The governance model is intentionally lightweight while the project is in its early stage. The goal is to keep decision-making clear, transparent, and maintainable as the community forms.
 
@@ -31,7 +31,6 @@ Input from users and contributors is welcome through:
 
 - GitHub issues
 - Pull requests
-- GitHub discussions, if enabled
 - Design proposals
 - Documentation feedback
 
@@ -44,12 +43,10 @@ For significant changes, contributors should open an issue or proposal before im
 Significant changes may include:
 
 - Public APIs
-- Workflow definition formats
+- Agentlet definition formats
 - Runtime architecture
-- Connector framework changes
 - Security-sensitive functionality
-- Deployment model changes
-- Data model or persistence changes
+- Data model changes
 - Licensing or governance changes
 - Breaking changes to user-facing behavior
 
@@ -81,7 +78,7 @@ The maintainer may request changes, close stale pull requests, or defer work tha
 
 Releases are created by the maintainer.
 
-Before `v1.0`, Synteles should be considered early-stage software. Breaking changes may occur.
+Before `v1.0`, Synteles Agentlet should be considered early-stage software. Breaking changes may occur.
 
 Release notes should document:
 
@@ -158,7 +155,7 @@ See [SECURITY.md](SECURITY.md).
 
 ## License
 
-Synteles source code is licensed under the Apache License, Version 2.0, unless otherwise stated.
+Synteles Agentlet source code is licensed under the Apache License, Version 2.0, unless otherwise stated.
 
 See [LICENSE](LICENSE).
 

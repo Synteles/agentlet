@@ -2,11 +2,11 @@
 
 ## Our Commitment
 
-Synteles is an open-source project for AI workers and enterprise workflow automation.
+Synteles Agentlet is an open-source project for AI workers and enterprise workflow automation.
 
 We are committed to providing a respectful, inclusive, and harassment-free environment for everyone participating in the project, regardless of experience level, background, identity, nationality, language, location, or role.
 
-We want Synteles to be a community where users, contributors, maintainers, and organizations can collaborate constructively.
+We want Synteles Agentlet to be a community where users, contributors, maintainers, and organizations can collaborate constructively.
 
 ## Expected Behavior
 
@@ -36,7 +36,7 @@ Unacceptable behavior includes:
 
 ## Project Spaces
 
-This Code of Conduct applies to all Synteles project spaces, including:
+This Code of Conduct applies to all Synteles Agentlet project spaces, including:
 
 - GitHub repositories
 - Issues and pull requests
@@ -44,7 +44,7 @@ This Code of Conduct applies to all Synteles project spaces, including:
 - Documentation and examples
 - Community channels
 - Events, calls, or meetings related to the project
-- Any other communication connected to the Synteles project
+- Any other communication connected to the Synteles Agentlet project
 
 It also applies when an individual is representing the project in public spaces.
 
@@ -93,7 +93,7 @@ It is not intended to restrict respectful disagreement, technical debate, or goo
 
 ## Attribution
 
-This Code of Conduct is inspired by common open-source community standards and adapted for the Synteles project.
+This Code of Conduct is inspired by common open-source community standards and adapted for the Synteles Agentlet project.
 
 ## Updates
 

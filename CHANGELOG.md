@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Synteles will be documented in this file.
+All notable changes to Synteles Agentlet will be documented in this file.
 
 This project intends to follow semantic versioning once the public APIs, workflow definitions, and runtime interfaces become stable.
 
