@@ -6,6 +6,12 @@ This project intends to follow semantic versioning once the public APIs, workflo
 
 Before `v1.0`, breaking changes may occur without a major version bump.
 
+## [Unreleased]
+
+### Changed
+
+- Restructured documentation layout: consolidated observability docs into `docs/reference/`, removed stale files (`ci-cd.md`, `deployment.md`, `versioning.md`, `core-concepts.md`), rewrote architecture docs to remove duplicated source code in favour of diagrams and tables, and synced README badges and section links with the current docs structure.
+
 ## [0.1.0-alpha] - 2026-05-27
 
 ### Added
