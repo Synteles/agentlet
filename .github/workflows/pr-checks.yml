@@ -65,8 +65,8 @@ jobs:
           path: coverage.xml
         continue-on-error: true
 
-  docker-build-test:
-    name: Docker Build Test
+  docker-build-amd64:
+    name: Docker Build & Scan (amd64)
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -74,9 +74,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.1.0
@@ -92,16 +89,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
-
-      - name: Build Docker image (arm64)
-        uses: docker/build-push-action@v7.2.0
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/arm64
 
       - name: Install Trivy
         run: |
@@ -123,6 +110,30 @@ jobs:
           sarif_file: trivy-results.sarif
           category: trivy
         continue-on-error: true
+
+  docker-build-arm64:
+    name: Docker Build (arm64)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.1.0
+
+      - name: Build Docker image (arm64)
+        uses: docker/build-push-action@v7.2.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/arm64
 
   secret-scanning:
     name: Secret Scanning
