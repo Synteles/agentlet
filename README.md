@@ -154,20 +154,15 @@ Copy a template and customize it for your use case. Use the schema in your IDE t
 - [MCP Tool Integration](docs/reference/mcp-integration.md)
 - [Multi-Agent Systems](docs/reference/multi-agent.md)
 - [Swarm Pattern](docs/reference/swarm.md)
-- [Deployment Guide](docs/reference/deployment.md)
-- [Versioning](docs/reference/versioning.md)
-- [CI/CD Automation](docs/reference/ci-cd.md)
+- [Logging](docs/reference/logging.md)
+- [OpenTelemetry & Tracing](docs/reference/telemetry.md)
+- [Debugging](docs/reference/debugging.md)
 
 ### Architecture & Design
 - [Architecture Overview](docs/architecture/overview.md)
 - [Agent Lifecycle](docs/architecture/agent-lifecycle.md)
 - [Configuration System](docs/architecture/configuration-system.md)
 - [Tool Management](docs/architecture/tool-management.md)
-
-### Observability
-- [Logging](docs/observability/logging.md)
-- [OpenTelemetry & Tracing](docs/observability/telemetry.md)
-- [Monitoring](docs/observability/monitoring.md)
 
 ## Development
 
