@@ -11,6 +11,7 @@ Before `v1.0`, breaking changes may occur without a major version bump.
 ### Changed
 
 - Restructured documentation layout: consolidated observability docs into `docs/reference/`, removed stale files (`ci-cd.md`, `deployment.md`, `versioning.md`, `core-concepts.md`), rewrote architecture docs to remove duplicated source code in favour of diagrams and tables, and synced README badges and section links with the current docs structure.
+- Standardised product name to "Synteles Agentlet" across all community docs (`GOVERNANCE.md`, `TRADEMARKS.md`, `SECURITY.md`, `NOTICE`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`); fixed stale `docs/observability/` path in `CONTRIBUTING.md`; expanded `README.md` Overview with off-the-shelf tools, timeouts and retries, and a polished intro sentence.
 
 ## [0.1.0-alpha] - 2026-05-27
 
