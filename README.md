@@ -9,6 +9,7 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status: Alpha](https://img.shields.io/badge/status-alpha-red.svg)](CHANGELOG.md)
+[![Build](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml)
 
 ⚠️ **Early Development**: Synteles Agentlet is pre-v1.0. APIs and configurations may change. See [Known Limitations](#known-limitations).
 
@@ -28,14 +29,6 @@ Synteles Agentlet is a Python runtime for autonomous AI agents built on the Stra
 
 ## Installation
 
-### From GitHub Release
-
-Download the latest wheel from the [Releases page](https://github.com/Synteles/agentlet/releases) and install it:
-
-```bash
-pip install agentlet_core-<version>-py3-none-any.whl
-```
-
 ### With uv (recommended for development)
 
 ```bash
@@ -53,6 +46,14 @@ docker run -it --rm \
   -e ANTHROPIC_API_KEY="your-key" \
   synteles/agentlet-core:latest \
   agentlet-core --agentlet generic-assistant --prompt "Hello"
+```
+
+### From GitHub Release
+
+Download the latest wheel from the [Releases page](https://github.com/Synteles/agentlet/releases) and install it:
+
+```bash
+pip install agentlet_core-<version>-py3-none-any.whl
 ```
 
 ### From source
@@ -181,17 +182,11 @@ For local development with Docker Compose:
 docker compose up
 ```
 
-## Deployment
-
-See [Deployment Guide](docs/reference/deployment.md) for Docker, Kubernetes, and production patterns.
-
 ## Contributing
 
 Contributions are welcome. Good first contribution areas:
 
 - Bug reports and reproducible issues
-- Kubernetes deployment support (Helm charts)
-- Governance, identity and access management capabilities
 - Security hardening
 - Documentation improvements
 - Tests
@@ -204,8 +199,6 @@ AI-assisted coding is allowed, but contributors remain responsible for the code 
 
 - Pre-v1.0 software: APIs and configurations may change
 - Security support is best-effort until stable release
-- Production deployment requires manual review and hardening
-- Observability and error handling are prioritized, but log outputs are still in early iteration
 
 ## Security
 
