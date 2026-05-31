@@ -1,6 +1,6 @@
 [project]
 name = "agentlet-core"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "Autonomous AI agent runtime - standardized, containerized units of AI agency"
 readme = "README.md"
 license = {text = "Apache-2.0"}
