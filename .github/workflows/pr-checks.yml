@@ -114,6 +114,7 @@ jobs:
   docker-build-arm64:
     name: Docker Build (arm64)
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
 
     steps:
       - name: Checkout code
