@@ -1,7 +1,7 @@
 services:
   synteles-agentlet:
     container_name: agentlet
-    image: synteles/agentlet:latest
+    image: synteles/agentlet:${AGENTLET_TAG:-edge}
     build:
       context: .
       dockerfile: Dockerfile
