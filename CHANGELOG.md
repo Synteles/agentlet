@@ -8,6 +8,11 @@ Before `v1.0`, breaking changes may occur without a major version bump.
 
 ## [Unreleased]
 
+### Changed
+
+- Updated `docker-compose.yml` image reference to `synteles/agentlet` and parametrized the tag via `AGENTLET_TAG` env var (default: `edge`).
+- Overhauled `.env.example`: corrected LiteLLM env var names (`AWS_REGION_NAME`, `OPENAI_ORGANIZATION`), added Azure OpenAI, Google Gemini, and Ollama sections, added reference to LiteLLM provider docs, removed `DEBUG` and `LOG_LEVEL` which are not read from environment.
+
 ## [0.1.0-alpha.2] - 2026-05-31
 
 ### Changed
