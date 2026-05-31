@@ -1,7 +1,7 @@
 services:
   synteles-agentlet:
     container_name: agentlet
-    image: synteles/agentlet-core:latest
+    image: synteles/agentlet:latest
     build:
       context: .
       dockerfile: Dockerfile
