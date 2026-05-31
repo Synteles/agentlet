@@ -10,7 +10,8 @@
 [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status: Alpha](https://img.shields.io/badge/status-alpha-red.svg)](CHANGELOG.md)
 [![Build](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/Synteles/agentlet/actions/workflows/pr-checks.yml)
-[![Latest Release](https://img.shields.io/github/v/release/Synteles/agentlet)](https://github.com/Synteles/agentlet/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/Synteles/agentlet?include_prereleases)](https://github.com/Synteles/agentlet/releases/latest)
+[![Docker Hub](https://img.shields.io/docker/v/synteles/agentlet?label=docker&sort=semver)](https://hub.docker.com/r/synteles/agentlet/tags)
 
 ⚠️ **Early Development**: Synteles Agentlet is pre-v1.0. APIs and configurations may change. See [Known Limitations](#known-limitations).
 
